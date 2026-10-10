@@ -1,0 +1,875 @@
+[
+  {
+    "location_id": 2742,
+    "full_name": "Art Studio Building",
+    "abbreviation": "LA",
+    "defaultlatitude": 35.93180563,
+    "defaultlongitude": -79.05819518,
+    "campus_id": 1,
+    "geo_address": "108 Airport Dr, Chapel Hill, NC 27599"
+  },
+  {
+    "location_id": 2743,
+    "full_name": "Kenan Laboratories",
+    "abbreviation": "KL",
+    "defaultlatitude": 35.90913912,
+    "defaultlongitude": -79.05112771,
+    "campus_id": 1,
+    "geo_address": "125 South Road Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2744,
+    "full_name": "Battle",
+    "abbreviation": "BA",
+    "defaultlatitude": 35.91415427,
+    "defaultlongitude": -79.05311778,
+    "campus_id": 1,
+    "geo_address": "170 E Franklin St, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2745,
+    "full_name": "Horton",
+    "abbreviation": "HT",
+    "defaultlatitude": 35.90335531,
+    "defaultlongitude": -79.04363647,
+    "campus_id": 1,
+    "geo_address": "411 Skipper Bowles Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2746,
+    "full_name": "Mary Ellen Jones",
+    "abbreviation": "MJ",
+    "defaultlatitude": 35.90381625,
+    "defaultlongitude": -79.05342097,
+    "campus_id": 1,
+    "geo_address": "116 Manning Drive Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2747,
+    "full_name": "Davis Library",
+    "abbreviation": "LD",
+    "defaultlatitude": 35.9112652,
+    "defaultlongitude": -79.04805499,
+    "campus_id": 1,
+    "geo_address": "208 Raleigh St, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2748,
+    "full_name": "Sitterson",
+    "abbreviation": "SN",
+    "defaultlatitude": 35.91005148,
+    "defaultlongitude": -79.05330287,
+    "campus_id": 1,
+    "geo_address": "201 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2749,
+    "full_name": "Tate Turner Kuralt",
+    "abbreviation": "TT",
+    "defaultlatitude": 35.9080395,
+    "defaultlongitude": -79.05441847,
+    "campus_id": 1,
+    "geo_address": "325 Pittsboro Street, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2750,
+    "full_name": "Van-Hecke-Wettach",
+    "abbreviation": "VW",
+    "defaultlatitude": 35.90951559,
+    "defaultlongitude": -79.04246251,
+    "campus_id": 1,
+    "geo_address": "160 Ridge Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2751,
+    "full_name": "Carrington Hall",
+    "abbreviation": "CN",
+    "defaultlatitude": 35.90753218,
+    "defaultlongitude": -79.05174966,
+    "campus_id": 1,
+    "geo_address": "120 Medical Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2752,
+    "full_name": "Kerr Hall (Pharmacy)",
+    "abbreviation": "KE",
+    "defaultlatitude": 35.90720332,
+    "defaultlongitude": -79.05380679,
+    "campus_id": 1,
+    "geo_address": "311 Pharmacy Lane, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2753,
+    "full_name": "Fetzer Hall",
+    "abbreviation": "FH",
+    "defaultlatitude": 35.90972921,
+    "defaultlongitude": -79.04690279,
+    "campus_id": 1,
+    "geo_address": "210 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2754,
+    "full_name": "Alumni",
+    "abbreviation": "AL",
+    "defaultlatitude": 35.91342273,
+    "defaultlongitude": -79.05093055,
+    "campus_id": 1,
+    "geo_address": "106 Stadium Dr, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2755,
+    "full_name": "Campus Y",
+    "abbreviation": "YC",
+    "defaultlatitude": 35.91233181,
+    "defaultlongitude": -79.05134655,
+    "campus_id": 1,
+    "geo_address": "180 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2756,
+    "full_name": "Bondurant Hall",
+    "abbreviation": "BN",
+    "defaultlatitude": 35.90658092,
+    "defaultlongitude": -79.05217631,
+    "campus_id": 1,
+    "geo_address": "321 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2757,
+    "full_name": "Carroll",
+    "abbreviation": "CA",
+    "defaultlatitude": 35.91108198,
+    "defaultlongitude": -79.05197405,
+    "campus_id": 1,
+    "geo_address": "211 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2758,
+    "full_name": "Dey Hall",
+    "abbreviation": "DE",
+    "defaultlatitude": 35.91065508,
+    "defaultlongitude": -79.05074733,
+    "campus_id": 1,
+    "geo_address": "135 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2759,
+    "full_name": "Davie",
+    "abbreviation": "DA",
+    "defaultlatitude": 35.91355703,
+    "defaultlongitude": -79.04939819,
+    "campus_id": 1,
+    "geo_address": "235 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2760,
+    "full_name": "Naval ROTC Armory",
+    "abbreviation": "NA",
+    "defaultlatitude": 35.90925612,
+    "defaultlongitude": -79.05293641,
+    "campus_id": 1,
+    "geo_address": "221 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2761,
+    "full_name": "Taylor Hall (not Ram Village)",
+    "abbreviation": "TH",
+    "defaultlatitude": 35.90318563,
+    "defaultlongitude": -79.05357221,
+    "campus_id": 1,
+    "geo_address": "109 Mason Farm Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2762,
+    "full_name": "Peabody",
+    "abbreviation": "PE",
+    "defaultlatitude": 35.91069053,
+    "defaultlongitude": -79.0536007,
+    "campus_id": 1,
+    "geo_address": "100 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2763,
+    "full_name": "FedEx Global Education",
+    "abbreviation": "GC",
+    "defaultlatitude": 35.90891256,
+    "defaultlongitude": -79.05404701,
+    "campus_id": 1,
+    "geo_address": "301 Pittsboro Street, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2764,
+    "full_name": "Morehead Laboratory",
+    "abbreviation": "ML",
+    "defaultlatitude": 35.90914112,
+    "defaultlongitude": -79.05183551,
+    "campus_id": 1,
+    "geo_address": "115 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2765,
+    "full_name": "Center for Dramatic Art",
+    "abbreviation": "DC",
+    "defaultlatitude": 35.91264593,
+    "defaultlongitude": -79.04412952,
+    "campus_id": 1,
+    "geo_address": "120 Country Club Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2766,
+    "full_name": "Beard (Pharmacy)",
+    "abbreviation": "BE",
+    "defaultlatitude": 35.90808068,
+    "defaultlongitude": -79.05351254,
+    "campus_id": 1,
+    "geo_address": "301 Pharmacy Ln, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2767,
+    "full_name": "Gerrard",
+    "abbreviation": "GR",
+    "defaultlatitude": 35.91236579,
+    "defaultlongitude": -79.05140675,
+    "campus_id": 1,
+    "geo_address": "160 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2768,
+    "full_name": "Clinical Sciences (Burnett-Womack)",
+    "abbreviation": "CS",
+    "defaultlatitude": 35.90557173,
+    "defaultlongitude": -79.05231047,
+    "campus_id": 1,
+    "geo_address": "160 Dental Circle, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2769,
+    "full_name": "Ackland",
+    "abbreviation": "AC",
+    "defaultlatitude": 35.91280011,
+    "defaultlongitude": -79.05484564,
+    "campus_id": 1,
+    "geo_address": "101 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2770,
+    "full_name": "Koury Residence Hall",
+    "abbreviation": "KR",
+    "defaultlatitude": 35.90371738,
+    "defaultlongitude": -79.04325362,
+    "campus_id": 1,
+    "geo_address": "480 Ehringhaus Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2771,
+    "full_name": "Wilson",
+    "abbreviation": "WI",
+    "defaultlatitude": 35.90867606,
+    "defaultlongitude": -79.05190145,
+    "campus_id": 1,
+    "geo_address": "110 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2772,
+    "full_name": "Murray Hall",
+    "abbreviation": "MY",
+    "defaultlatitude": 35.90991379,
+    "defaultlongitude": -79.05173967,
+    "campus_id": 1,
+    "geo_address": "121 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2773,
+    "full_name": "Murphey",
+    "abbreviation": "MU",
+    "defaultlatitude": 35.91096698,
+    "defaultlongitude": -79.04958768,
+    "campus_id": 1,
+    "geo_address": "204 Lenoir Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2774,
+    "full_name": "North Pole",
+    "abbreviation": "NP",
+    "defaultlatitude": 90,
+    "defaultlongitude": 135,
+    "campus_id": 2,
+    "geo_address": null
+  },
+  {
+    "location_id": 2775,
+    "full_name": "Hanes Art Center",
+    "abbreviation": "AR",
+    "defaultlatitude": 35.9125865,
+    "defaultlongitude": -79.05442015,
+    "campus_id": 1,
+    "geo_address": "121 E Cameron Ave, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2776,
+    "full_name": "Hill",
+    "abbreviation": "HI",
+    "defaultlatitude": 35.91279783,
+    "defaultlongitude": -79.0532612,
+    "campus_id": 1,
+    "geo_address": "145 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2777,
+    "full_name": "Student Union",
+    "abbreviation": "SU",
+    "defaultlatitude": 35.91016396,
+    "defaultlongitude": -79.04755326,
+    "campus_id": 1,
+    "geo_address": "209 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2778,
+    "full_name": "Carolina Hall",
+    "abbreviation": "CH",
+    "defaultlatitude": 35.91212035,
+    "defaultlongitude": -79.04982895,
+    "campus_id": 1,
+    "geo_address": "220 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2779,
+    "full_name": "Manning",
+    "abbreviation": "MA",
+    "defaultlatitude": 35.91127871,
+    "defaultlongitude": -79.04920291,
+    "campus_id": 1,
+    "geo_address": "216 Lenoir Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2780,
+    "full_name": "Person",
+    "abbreviation": "PS",
+    "defaultlatitude": 35.91270702,
+    "defaultlongitude": -79.05248202,
+    "campus_id": 1,
+    "geo_address": "181 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2781,
+    "full_name": "Coker",
+    "abbreviation": "CO",
+    "defaultlatitude": 35.90912329,
+    "defaultlongitude": -79.05147457,
+    "campus_id": 1,
+    "geo_address": "120 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2782,
+    "full_name": "McColl Building",
+    "abbreviation": "MB",
+    "defaultlatitude": 35.89985097,
+    "defaultlongitude": -79.04610638,
+    "campus_id": 1,
+    "geo_address": "300 Kenan Center Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2783,
+    "full_name": "Graham Memorial",
+    "abbreviation": "GM",
+    "defaultlatitude": 35.91507994,
+    "defaultlongitude": -79.05141814,
+    "campus_id": 1,
+    "geo_address": "218 E Franklin St, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2784,
+    "full_name": "Hardin",
+    "abbreviation": "HD",
+    "defaultlatitude": 35.90405175,
+    "defaultlongitude": -79.04612976,
+    "campus_id": 1,
+    "geo_address": "495 Paul Hardin Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2785,
+    "full_name": "Chapman Hall",
+    "abbreviation": "CP",
+    "defaultlatitude": 35.91077251,
+    "defaultlongitude": -79.05269867,
+    "campus_id": 1,
+    "geo_address": "205 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2786,
+    "full_name": "McGavran-Greenberg (Public Health)",
+    "abbreviation": "MC",
+    "defaultlatitude": 35.90644652,
+    "defaultlongitude": -79.05447547,
+    "campus_id": 1,
+    "geo_address": "401 Pittsboro Street, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2787,
+    "full_name": "Berryhill",
+    "abbreviation": "BH",
+    "defaultlatitude": 35.90719112,
+    "defaultlongitude": -79.05167481,
+    "campus_id": 1,
+    "geo_address": "1 Medical Dr, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2788,
+    "full_name": "Genome Sciences Building",
+    "abbreviation": "GS",
+    "defaultlatitude": 35.9084755,
+    "defaultlongitude": -79.05079988,
+    "campus_id": 1,
+    "geo_address": "250 Bell Tower Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2789,
+    "full_name": "Playmaker's Theatre",
+    "abbreviation": "PT",
+    "defaultlatitude": 35.9121985,
+    "defaultlongitude": -79.05030709,
+    "campus_id": 1,
+    "geo_address": "202 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2790,
+    "full_name": "Hanes Hall",
+    "abbreviation": "HN",
+    "defaultlatitude": 35.91100114,
+    "defaultlongitude": -79.05135764,
+    "campus_id": 1,
+    "geo_address": "150 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2791,
+    "full_name": "Medical School Wing E",
+    "abbreviation": "WE",
+    "defaultlatitude": 35.90654346,
+    "defaultlongitude": -79.04997268,
+    "campus_id": 1,
+    "geo_address": "338 Emergency Room Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2792,
+    "full_name": "Student Stores",
+    "abbreviation": "",
+    "defaultlatitude": 35.90973266,
+    "defaultlongitude": -79.04826023,
+    "campus_id": 1,
+    "geo_address": "207 South Road, Chapel Hill, NC 27599"
+  },
+  {
+    "location_id": 2793,
+    "full_name": "Hospital, UNC",
+    "abbreviation": "HP",
+    "defaultlatitude": 35.90412856,
+    "defaultlongitude": -79.04950968,
+    "campus_id": 1,
+    "geo_address": "101 Manning Dr, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2794,
+    "full_name": "Craige-North",
+    "abbreviation": "CE",
+    "defaultlatitude": 35.90426235,
+    "defaultlongitude": -79.04577158,
+    "campus_id": 1,
+    "geo_address": "515 Paul Hardin Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2795,
+    "full_name": "Rizzo Center",
+    "abbreviation": "RZ",
+    "defaultlatitude": 35.9126604,
+    "defaultlongitude": -79.00472808,
+    "campus_id": 1,
+    "geo_address": "150 Dubose Home Ln, Chapel Hill, NC 27517"
+  },
+  {
+    "location_id": 2796,
+    "full_name": "Cobb",
+    "abbreviation": "CB",
+    "defaultlatitude": 35.91307,
+    "defaultlongitude": -79.04442001,
+    "campus_id": 1,
+    "geo_address": "110 Country Club Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2797,
+    "full_name": "Smith",
+    "abbreviation": "SM",
+    "defaultlatitude": 35.91214396,
+    "defaultlongitude": -79.05318804,
+    "campus_id": 1,
+    "geo_address": "135 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2798,
+    "full_name": "Greenlaw",
+    "abbreviation": "GL",
+    "defaultlatitude": 35.91119327,
+    "defaultlongitude": -79.04910816,
+    "campus_id": 1,
+    "geo_address": "203 Lenoir Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2799,
+    "full_name": "Medical School Wing D",
+    "abbreviation": "WD",
+    "defaultlatitude": 35.90628772,
+    "defaultlongitude": -79.04903826,
+    "campus_id": 1,
+    "geo_address": "336 Emergency Room Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2800,
+    "full_name": "Abernethy",
+    "abbreviation": "AB",
+    "defaultlatitude": 35.91167621,
+    "defaultlongitude": -79.05426351,
+    "campus_id": 1,
+    "geo_address": "131 S Columbia St, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2801,
+    "full_name": "Caldwell",
+    "abbreviation": "CW",
+    "defaultlatitude": 35.9130133,
+    "defaultlongitude": -79.04906862,
+    "campus_id": 1,
+    "geo_address": "240 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2802,
+    "full_name": "Hickerson House",
+    "abbreviation": "HK",
+    "defaultlatitude": 35.91553837,
+    "defaultlongitude": -79.04790399,
+    "campus_id": 1,
+    "geo_address": "108 Battle Lane, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2803,
+    "full_name": "Michael Hooker Research Center",
+    "abbreviation": "HC",
+    "defaultlatitude": 35.90567863,
+    "defaultlongitude": -79.05417889,
+    "campus_id": 1,
+    "geo_address": "135 Dauer Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2804,
+    "full_name": "Phillips",
+    "abbreviation": "PH",
+    "defaultlatitude": 35.91099579,
+    "defaultlongitude": -79.05243537,
+    "campus_id": 1,
+    "geo_address": "120 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2805,
+    "full_name": "Hamilton Hall",
+    "abbreviation": "HM",
+    "defaultlatitude": 35.91225635,
+    "defaultlongitude": -79.04874762,
+    "campus_id": 1,
+    "geo_address": "102 Emerson Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2806,
+    "full_name": "Carmichael Arena",
+    "abbreviation": "CG",
+    "defaultlatitude": 35.91051313,
+    "defaultlongitude": -79.04489252,
+    "campus_id": 1,
+    "geo_address": "310 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2807,
+    "full_name": "North Pole",
+    "abbreviation": "NP",
+    "defaultlatitude": 90,
+    "defaultlongitude": 135,
+    "campus_id": 2,
+    "geo_address": null
+  },
+  {
+    "location_id": 2808,
+    "full_name": "South Pole",
+    "abbreviation": "SP",
+    "defaultlatitude": 90,
+    "defaultlongitude": 45,
+    "campus_id": 2,
+    "geo_address": null
+  },
+  {
+    "location_id": 2809,
+    "full_name": "Bingham",
+    "abbreviation": "BI",
+    "defaultlatitude": 35.91141254,
+    "defaultlongitude": -79.04947755,
+    "campus_id": 1,
+    "geo_address": "201 Lenoir Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2810,
+    "full_name": "Rosenau (Public Health)",
+    "abbreviation": "RO",
+    "defaultlatitude": 35.906114,
+    "defaultlongitude": -79.05369339,
+    "campus_id": 1,
+    "geo_address": "421 Pittsboro Street, Chapel Hill, NC 27516"
+  },
+  {
+    "location_id": 2811,
+    "full_name": "Wilson Library",
+    "abbreviation": "LG",
+    "defaultlatitude": 35.90962564,
+    "defaultlongitude": -79.0497277,
+    "campus_id": 1,
+    "geo_address": "201 South Road, Chapel Hill, NC 27515"
+  },
+  {
+    "location_id": 2812,
+    "full_name": "New East",
+    "abbreviation": "NE",
+    "defaultlatitude": 35.91288843,
+    "defaultlongitude": -79.05023964,
+    "campus_id": 1,
+    "geo_address": "223 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2813,
+    "full_name": "U/Grad Library (House)",
+    "abbreviation": "LU",
+    "defaultlatitude": 35.90976007,
+    "defaultlongitude": -79.04893525,
+    "campus_id": 1,
+    "geo_address": "203 South Road, Chapel Hill, NC 27515"
+  },
+  {
+    "location_id": 2814,
+    "full_name": "Morehead Planetarium",
+    "abbreviation": "PA",
+    "defaultlatitude": 35.91431166,
+    "defaultlongitude": -79.0505529,
+    "campus_id": 1,
+    "geo_address": "222 E. Franklin Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2815,
+    "full_name": "Mitchell",
+    "abbreviation": "MT",
+    "defaultlatitude": 35.90786593,
+    "defaultlongitude": -79.05227791,
+    "campus_id": 1,
+    "geo_address": "104 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2816,
+    "full_name": "Woollen Gym",
+    "abbreviation": "WG",
+    "defaultlatitude": 35.91075035,
+    "defaultlongitude": -79.04612666,
+    "campus_id": 1,
+    "geo_address": "300 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2817,
+    "full_name": "Pre-Clinic Ed (Bullitt-Brinkhous Bldg)",
+    "abbreviation": "CL",
+    "defaultlatitude": 35.90592415,
+    "defaultlongitude": -79.05170747,
+    "campus_id": 1,
+    "geo_address": "160 Medical Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2818,
+    "full_name": "Paul Green Theatre",
+    "abbreviation": "PG",
+    "defaultlatitude": 35.91205039,
+    "defaultlongitude": -79.04375097,
+    "campus_id": 1,
+    "geo_address": "120 Country Club Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2819,
+    "full_name": "Kenan Music Building",
+    "abbreviation": "KM",
+    "defaultlatitude": 35.91208391,
+    "defaultlongitude": -79.05447545,
+    "campus_id": 1,
+    "geo_address": "125 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2820,
+    "full_name": "Gardner",
+    "abbreviation": "GA",
+    "defaultlatitude": 35.91106971,
+    "defaultlongitude": -79.05091848,
+    "campus_id": 1,
+    "geo_address": "141 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2821,
+    "full_name": "Medical School Wing C",
+    "abbreviation": "WC",
+    "defaultlatitude": 35.90649856,
+    "defaultlongitude": -79.04963297,
+    "campus_id": 1,
+    "geo_address": "334 Emergency Room Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2822,
+    "full_name": "Swain Hall",
+    "abbreviation": "SW",
+    "defaultlatitude": 35.91228146,
+    "defaultlongitude": -79.05369471,
+    "campus_id": 1,
+    "geo_address": "101 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2823,
+    "full_name": "South Pole",
+    "abbreviation": "SP",
+    "defaultlatitude": 90,
+    "defaultlongitude": 45,
+    "campus_id": 2,
+    "geo_address": null
+  },
+  {
+    "location_id": 2824,
+    "full_name": "Venable Hall",
+    "abbreviation": "VN",
+    "defaultlatitude": 35.91028148,
+    "defaultlongitude": -79.05113197,
+    "campus_id": 1,
+    "geo_address": "123 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2825,
+    "full_name": "Knapp",
+    "abbreviation": "KN",
+    "defaultlatitude": 35.91040251,
+    "defaultlongitude": -79.04193991,
+    "campus_id": 1,
+    "geo_address": "400 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2826,
+    "full_name": "Howell",
+    "abbreviation": "HO",
+    "defaultlatitude": 35.91355774,
+    "defaultlongitude": -79.05010697,
+    "campus_id": 1,
+    "geo_address": "231 E. Cameron Ave, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2827,
+    "full_name": "Stone Center",
+    "abbreviation": "SC",
+    "defaultlatitude": 35.90812744,
+    "defaultlongitude": -79.05015284,
+    "campus_id": 1,
+    "geo_address": "150 South Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2828,
+    "full_name": "Lenoir",
+    "abbreviation": "LE",
+    "defaultlatitude": 35.91067737,
+    "defaultlongitude": -79.0487036,
+    "campus_id": 1,
+    "geo_address": "211 Lenoir Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2829,
+    "full_name": "MacNider",
+    "abbreviation": "MD",
+    "defaultlatitude": 35.90561335,
+    "defaultlongitude": -79.05255745,
+    "campus_id": 1,
+    "geo_address": "333 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2830,
+    "full_name": "Steele",
+    "abbreviation": "ST",
+    "defaultlatitude": 35.91176062,
+    "defaultlongitude": -79.05037689,
+    "campus_id": 1,
+    "geo_address": "214 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2831,
+    "full_name": "North Pole",
+    "abbreviation": "NP",
+    "defaultlatitude": 90,
+    "defaultlongitude": 135,
+    "campus_id": 2,
+    "geo_address": null
+  },
+  {
+    "location_id": 2832,
+    "full_name": "South Pole",
+    "abbreviation": "SP",
+    "defaultlatitude": 90,
+    "defaultlongitude": 45,
+    "campus_id": 2,
+    "geo_address": null
+  },
+  {
+    "location_id": 2833,
+    "full_name": "New West",
+    "abbreviation": "NW",
+    "defaultlatitude": 35.91206902,
+    "defaultlongitude": -79.05240044,
+    "campus_id": 1,
+    "geo_address": "175 E. Cameron Avenue, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2834,
+    "full_name": "Medical School Wing B",
+    "abbreviation": "WB",
+    "defaultlatitude": 35.90628602,
+    "defaultlongitude": -79.04985252,
+    "campus_id": 1,
+    "geo_address": "332 Emergency Room Drive, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2835,
+    "full_name": "Fred Brooks Hall at Sitterson Hall",
+    "abbreviation": "FB",
+    "defaultlatitude": 35.9105914,
+    "defaultlongitude": -79.05299467,
+    "campus_id": 1,
+    "geo_address": "201 S. Columbia Street, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2836,
+    "full_name": "Neuroscience Research Building",
+    "abbreviation": "NR",
+    "defaultlatitude": 35.90352985,
+    "defaultlongitude": -79.05503774,
+    "campus_id": 1,
+    "geo_address": "115 Mason Farm Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2837,
+    "full_name": "Bioinformatics",
+    "abbreviation": "BF",
+    "defaultlatitude": 35.90197847,
+    "defaultlongitude": -79.05343568,
+    "campus_id": 1,
+    "geo_address": "130 Mason Farm Road, Chapel Hill, NC 27514"
+  },
+  {
+    "location_id": 2838,
+    "full_name": "Dental (Brauer Hall)",
+    "abbreviation": "DN",
+    "defaultlatitude": 35.90545385,
+    "defaultlongitude": -79.05320847,
+    "campus_id": 1,
+    "geo_address": "140 Dental Circle, Chapel Hill, NC 27514"
+  }
+]
