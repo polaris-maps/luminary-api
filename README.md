@@ -22,16 +22,20 @@ curl localhost:3000/app/
 
 ## Layout
 
+Read [ARCHITECTURE.md](ARCHITECTURE.md) before writing code. Short version:
+
 ```text
 src/
-  app.ts          builds the Express app (export default app)
-  server.ts       creates the tables, then starts listening
-  db.ts           the SQLite connection (DATABASE_URL, defaults to file:luminary.db)
-  schema.ts       every CREATE TABLE; append new tables at the bottom
-  initDb.ts       runs schema.ts
-  routes/         one file per resource
-scripts/seed.ts   npm run seed
-test/fixtures/    small JSON snapshots used by tests
+  app.ts            builds the Express app (export default app)
+  server.ts         creates the tables, then starts listening
+  routes/           URL -> controller function
+  controllers/      request in, response out
+  services/         logic and rules
+  repositories/     SQL
+  schemas/          types and zod schemas
+  db/               connection (client.ts), tables (tables.ts), startup (init.ts)
+scripts/seed.ts     npm run seed
+test/fixtures/      small JSON snapshots used by tests
 ```
 
 ## Endpoints so far

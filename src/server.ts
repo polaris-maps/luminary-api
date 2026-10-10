@@ -1,5 +1,5 @@
 import app from "./app";
-import { initDb } from "./initDb";
+import { initDb } from "./db/init";
 
 const port = Number(process.env.PORT ?? 3000);
 

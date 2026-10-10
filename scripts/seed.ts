@@ -1,9 +1,10 @@
 // npm run seed
 // Copies buildings, doors, ramps, and reports from the old API into the local SQLite database.
 // Safe to run repeatedly: it empties the four tables first.
+// Scripts are the one place outside src/repositories/ allowed to write SQL.
 import { writeFile } from "node:fs/promises";
-import { db } from "../src/db";
-import { initDb } from "../src/initDb";
+import { db } from "../src/db/client";
+import { initDb } from "../src/db/init";
 
 const OLD_API = "https://polaris-api-dept-polaris.apps.cloudapps.unc.edu/app";
 

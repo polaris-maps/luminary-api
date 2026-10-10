@@ -1,6 +1,6 @@
-// Every table uses CREATE TABLE IF NOT EXISTS, so this is safe to run on every start.
-// Later tickets append new tables to the bottom of this string.
-export const schema = `
+// Every database table. CREATE TABLE IF NOT EXISTS makes this safe to run on every start.
+// New tickets add their tables to the BOTTOM of this string.
+export const tables = `
 CREATE TABLE IF NOT EXISTS building (
   id           INTEGER PRIMARY KEY,  -- keep the old ids, the app hardcodes some of them
   full_name    TEXT NOT NULL,
