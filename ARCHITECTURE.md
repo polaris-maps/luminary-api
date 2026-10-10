@@ -18,16 +18,17 @@ request
 | Folder | Put here | Never put here |
 |---|---|---|
 | `routes/` | `router.get(path, controller.fn)` lines | Logic, SQL, `req.body` |
-| `controllers/` | Read `req.params` / `req.query` / `req.body`, check them with a schema, call a service, choose the status code, `res.json(...)` | SQL, business rules |
-| `services/` | Rules and decisions, turning database rows into the shape the app reads | `req`, `res`, SQL |
+| `controllers/` | Read `req.params` / `req.query` / `req.body` / headers, check them with a schema, call a service, send the response with `res.json(...)` | SQL, business rules |
+| `services/` | Rules and decisions, turning database rows into the shape the app reads, and `throw new HttpError(404, "not_found")` when something is missing or not allowed | `req`, `res`, SQL |
 | `repositories/` | SQL queries, one small function each | `req`, `res`, business rules |
 | `schemas/` | TypeScript types for rows and responses, and zod schemas for request input | Logic of any kind |
 | `db/` | The connection, the list of tables, startup | Anything feature-specific |
 
-Two more folders will appear as tickets need them:
+More folders appear as tickets need them:
 
-- `utils/` holds small helpers with no app knowledge, like the distance math or the profanity filter.
-- `middleware/` holds Express middleware, like the error handler.
+- `utils/` holds small helpers with no app knowledge, like the distance math, the profanity filter, and `HttpError`.
+- `middleware/` holds Express middleware, like the 404 and error handlers.
+- `data/` holds data loaded into memory instead of the database, like the obstacle list and the walking map.
 
 ## Naming
 
@@ -110,13 +111,28 @@ router.get("/app/building/all", buildingController.getAllBuildings);
 app.use(buildingRoutes);
 ```
 
-## When there is request input
+## When there is request input or an error
 
-Checking input belongs in the **controller**, using a zod schema from `schemas/`. For example, ticket Backend-Rewrite 06 will add:
+- **Checking input** belongs in the **controller**, using a zod schema from `schemas/`.
+- **Saying no** belongs in the **service**. Throw an `HttpError` when something is missing or not allowed. The error handler (ticket Backend-Rewrite 04) turns it into the right status and JSON.
+
+For example, ticket Backend-Rewrite 06 will add:
 
 ```ts
 // schemas/building.schema.ts
 export const buildingIdParams = z.object({ id: z.coerce.number().int().positive() });
+
+// repositories/building.repository.ts
+export async function findById(id: number): Promise<BuildingRow | null> {
+  return queryOne<BuildingRow>("SELECT * FROM building WHERE id = ?", [id]);
+}
+
+// services/building.service.ts
+export async function getBuilding(id: number): Promise<AppBuilding> {
+  const row = await buildingRepository.findById(id);
+  if (!row) throw new HttpError(404, "not_found");
+  return toAppBuilding(row);
+}
 
 // controllers/building.controller.ts
 export async function getBuilding(req: Request, res: Response): Promise<void> {
@@ -125,6 +141,8 @@ export async function getBuilding(req: Request, res: Response): Promise<void> {
   res.json(building);
 }
 ```
+
+Controllers pass plain values to services, like `id` or `deviceId`, never `req` itself.
 
 ## Database tables
 
