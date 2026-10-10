@@ -60,19 +60,19 @@ Each file is a few lines. To add an endpoint, copy this pattern.
 router.get("/app/building/all", buildingController.getAllBuildings);
 
 // controllers/buildingController.ts
-export async function getAllBuildings(req: Request, res: Response): Promise<void> {
+export async function getAllBuildings(req: Request, res: Response) {
   const buildings = await buildingService.getAllBuildings();
   res.json(buildings);
 }
 
 // services/buildingService.ts
-export async function getAllBuildings(): Promise<AppBuilding[]> {
+export async function getAllBuildings() {
   const rows = await buildingRepository.findAll();
   return rows.map(toAppBuilding);
 }
 
 // repositories/buildingRepository.ts
-export async function findAll(): Promise<BuildingRow[]> {
+export async function findAll() {
   return query<BuildingRow>("SELECT * FROM building ORDER BY id");
 }
 ```
@@ -96,8 +96,8 @@ The error handler in `middleware/errorHandler.ts` does the rest:
 | What happened | Status | Message |
 |---|---|---|
 | You threw `HttpError(status, message)` | your status | your message |
-| Input failed a zod schema | 400 | what was wrong, like `id: Too small: expected number to be >0` |
-| The JSON body could not be read | 400 | `Request body is not valid JSON` |
+| Input failed a zod schema | 400 | the first problem, like `id: Too small: expected number to be >0` |
+| The JSON body could not be read | 400 | what the parser found wrong |
 | No route matched the URL | 404 | `Route not found: GET /app/nope` |
 | Any other error | 500 | `Something went wrong` |
 

@@ -1,49 +1,47 @@
-// Every database table. CREATE TABLE IF NOT EXISTS makes this safe to run on every start.
-// New tickets add their tables to the BOTTOM of this string.
 export const tables = `
 CREATE TABLE IF NOT EXISTS building (
-  id           INTEGER PRIMARY KEY,  -- keep the old ids, the app hardcodes some of them
-  full_name    TEXT NOT NULL,
+  id INTEGER PRIMARY KEY,
+  full_name TEXT NOT NULL,
   abbreviation TEXT,
-  latitude     REAL NOT NULL,
-  longitude    REAL NOT NULL,
-  campus_id    INTEGER NOT NULL DEFAULT 1,
-  geo_address  TEXT
+  latitude REAL NOT NULL,
+  longitude REAL NOT NULL,
+  campus_id INTEGER NOT NULL DEFAULT 1,
+  geo_address TEXT
 );
 
 CREATE TABLE IF NOT EXISTS door (
-  id           INTEGER PRIMARY KEY,
-  building_id  INTEGER NOT NULL,
-  latitude     REAL NOT NULL,
-  longitude    REAL NOT NULL,
-  is_indoor    INTEGER NOT NULL DEFAULT 0,  -- SQLite has no booleans: 0 = false, 1 = true
+  id INTEGER PRIMARY KEY,
+  building_id INTEGER NOT NULL,
+  latitude REAL NOT NULL,
+  longitude REAL NOT NULL,
+  is_indoor INTEGER NOT NULL DEFAULT 0,
   is_emergency INTEGER NOT NULL DEFAULT 0,
-  is_service   INTEGER NOT NULL DEFAULT 0
+  is_service INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS ramp (
-  id          INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY,
   building_id INTEGER,
-  latitude    REAL NOT NULL,
-  longitude   REAL NOT NULL
+  latitude REAL NOT NULL,
+  longitude REAL NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS report (
-  id                INTEGER PRIMARY KEY AUTOINCREMENT,
-  location          TEXT,
-  latitude          REAL NOT NULL,
-  longitude         REAL NOT NULL,
-  description       TEXT,
-  status            TEXT NOT NULL DEFAULT 'Open',  -- 'Open' or 'Resolved'
-  opened_at         INTEGER NOT NULL,              -- milliseconds since 1970
-  closed_at         INTEGER,
-  is_permanent      INTEGER NOT NULL DEFAULT 0,
-  votes             INTEGER NOT NULL DEFAULT 0,
-  image             TEXT,                          -- base64 JPEG, or NULL
-  categories        TEXT NOT NULL DEFAULT '[]',    -- JSON array of strings
-  qna               TEXT,                          -- JSON text from the app, store it unchanged
-  device_id         TEXT,                          -- used in Backend-Rewrite 12
-  last_confirmed_at INTEGER,                       -- used in Backend-Rewrite 13
-  deleted_at        INTEGER                        -- set when deleted; the row is kept
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  location TEXT,
+  latitude REAL NOT NULL,
+  longitude REAL NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'Open',
+  opened_at INTEGER NOT NULL,
+  closed_at INTEGER,
+  is_permanent INTEGER NOT NULL DEFAULT 0,
+  votes INTEGER NOT NULL DEFAULT 0,
+  image TEXT,
+  categories TEXT NOT NULL DEFAULT '[]',
+  qna TEXT,
+  device_id TEXT,
+  last_confirmed_at INTEGER,
+  deleted_at INTEGER
 );
 `;

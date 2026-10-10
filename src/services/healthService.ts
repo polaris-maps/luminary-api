@@ -1,8 +1,6 @@
 import * as healthRepository from "../repositories/healthRepository";
 
-export type Health = { status: "ok"; db: "ok" | "down" };
-
-export async function getHealth(): Promise<Health> {
+export async function getHealth() {
   try {
     await healthRepository.ping();
     return { status: "ok", db: "ok" };

@@ -1,9 +1,7 @@
-// Reads the request, calls the service, sends the response. Nothing else.
 import type { Request, Response } from "express";
 import * as buildingService from "../services/buildingService";
 
-// GET /app/building/all
-export async function getAllBuildings(_req: Request, res: Response): Promise<void> {
+export async function getAllBuildings(req: Request, res: Response) {
   const buildings = await buildingService.getAllBuildings();
   res.json(buildings);
 }

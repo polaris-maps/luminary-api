@@ -1,7 +1,6 @@
 import { db } from "./client";
 import { tables } from "./tables";
 
-// Creates any missing tables. Called once when the server starts.
-export async function initDb(): Promise<void> {
+export async function initDb() {
   await db.executeMultiple(tables);
 }

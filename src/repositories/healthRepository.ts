@@ -1,6 +1,5 @@
 import { query } from "../db/client";
 
-// Throws if the database cannot be reached.
-export async function ping(): Promise<void> {
+export async function ping() {
   await query("SELECT 1");
 }
