@@ -2,6 +2,13 @@ import { writeFile } from "node:fs/promises";
 import { db } from "../src/db/client";
 import { initDb } from "../src/db/init";
 
+/*
+I had claude create this script to seed your local SQL-lite with a snapshot of what is in
+our old production database.
+
+you can run it with npm run seed
+*/
+
 const oldApi = "https://polaris-api-dept-polaris.apps.cloudapps.unc.edu/app";
 
 async function download(path: string) {
