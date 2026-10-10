@@ -18,7 +18,8 @@ async function download(path: string) {
 
 function toMillis(time: number) {
   if (!time) return null;
-  return time < 10000000000 ? time * 1000 : time;
+  if (time < 10000000000) return time * 1000;
+  return time;
 }
 
 function isInChapelHill(report: any) {
@@ -53,7 +54,7 @@ for (const b of buildings) {
 for (const d of doors) {
   await query(
     "INSERT INTO door (id, building_id, latitude, longitude, is_indoor, is_emergency, is_service) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [d.door_id, d.building_id, d.latitude, d.longitude, d.is_indoor ? 1 : 0, d.is_emergency ? 1 : 0, d.is_service ? 1 : 0]
+    [d.door_id, d.building_id, d.latitude, d.longitude, d.is_indoor, d.is_emergency, d.is_service]
   );
 }
 
@@ -73,19 +74,22 @@ for (const r of reports) {
       r.latitude,
       r.longitude,
       r.description,
-      r.status ?? "Open",
+      r.status || "Open",
       toMillis(r.datetimeopen),
       toMillis(r.datetimeclosed),
-      r.votes ?? 0,
+      r.votes || 0,
       r.image || null,
-      JSON.stringify(r.categories ?? []),
+      JSON.stringify(r.categories || []),
       r.qna,
     ]
   );
 }
 
 await writeFile("test/fixtures/buildings.json", JSON.stringify(buildings, null, 2) + "\n");
-const sampleReports = reports.slice(0, 20).map((r: any) => ({ ...r, image: null }));
+const sampleReports = reports.slice(0, 20);
+for (const report of sampleReports) {
+  report.image = null;
+}
 await writeFile("test/fixtures/reports.json", JSON.stringify(sampleReports, null, 2) + "\n");
 
 console.log(`buildings: ${buildings.length}`);

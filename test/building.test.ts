@@ -39,7 +39,8 @@ test("Kenan Laboratories comes back with the right values", async () => {
 
 test("buildings come back sorted by id", async () => {
   const res = await request(app).get("/app/building/all");
-  const ids = res.body.map((b: any) => b.location_id);
 
-  expect(ids).toEqual([...ids].sort((a, b) => a - b));
+  for (let i = 1; i < res.body.length; i++) {
+    expect(res.body[i].location_id).toBeGreaterThan(res.body[i - 1].location_id);
+  }
 });

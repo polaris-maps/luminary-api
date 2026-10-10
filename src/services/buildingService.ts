@@ -10,7 +10,7 @@ export function toAppBuilding(row: BuildingRow): AppBuilding {
   return {
     location_id: row.id,
     full_name: row.full_name,
-    abbreviation: row.abbreviation ?? "",
+    abbreviation: row.abbreviation || "",
     defaultlatitude: row.latitude,
     defaultlongitude: row.longitude,
     campus_id: row.campus_id,
