@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import * as healthService from "../services/health.service";
+import * as healthService from "../services/healthService";
 
 // GET /app/
 export function sayHello(_req: Request, res: Response): void {

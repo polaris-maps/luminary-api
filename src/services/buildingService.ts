@@ -1,6 +1,6 @@
 // Building logic. No req or res here, and no SQL here.
-import * as buildingRepository from "../repositories/building.repository";
-import type { AppBuilding, BuildingRow } from "../schemas/building.schema";
+import * as buildingRepository from "../repositories/buildingRepository";
+import type { AppBuilding, BuildingRow } from "../schemas/buildingSchema";
 
 export async function getAllBuildings(): Promise<AppBuilding[]> {
   const rows = await buildingRepository.findAll();

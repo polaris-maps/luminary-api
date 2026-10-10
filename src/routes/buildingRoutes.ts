@@ -1,6 +1,6 @@
 // Which URL goes to which controller function. Nothing else.
 import { Router } from "express";
-import * as buildingController from "../controllers/building.controller";
+import * as buildingController from "../controllers/buildingController";
 
 const router = Router();
 

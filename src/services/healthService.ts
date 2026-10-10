@@ -1,4 +1,4 @@
-import * as healthRepository from "../repositories/health.repository";
+import * as healthRepository from "../repositories/healthRepository";
 
 export type Health = { status: "ok"; db: "ok" | "down" };
 
