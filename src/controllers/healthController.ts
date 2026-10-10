@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as healthService from "../services/healthService";
 
-export function sayHello(req: Request, res: Response) {
+export function health(req: Request, res: Response) {
   res.json({ message: "Health Check (200)" });
 }
 
