@@ -21,7 +21,7 @@ curl localhost:3000/app/building/all
 
 | Method | Path | Returns |
 |---|---|---|
-| GET | `/app/` | `{ "message": "Your API works! (200)" }` |
+| GET | `/app/` | `{ "message": "Health Check (200)" }` |
 | GET | `/app/health` | `{ "status": "ok", "db": "ok" }` |
 | GET | `/app/building/all` | Every building, in the shape the iPhone app reads |
 

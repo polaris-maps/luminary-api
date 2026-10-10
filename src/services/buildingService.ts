@@ -1,5 +1,5 @@
 import * as buildingRepository from "../repositories/buildingRepository";
-import type { AppBuilding, BuildingRow } from "../schemas/buildingSchema";
+import { AppBuilding, BuildingRow } from "../schemas/buildingSchema";
 
 export async function getAllBuildings() {
   const rows = await buildingRepository.findAll();

@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 import { HttpError } from "../utils/httpError";
 
 export function notFound(req: Request, res: Response) {

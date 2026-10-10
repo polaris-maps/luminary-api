@@ -1,6 +1,6 @@
 import { query } from "../db/client";
-import type { BuildingRow } from "../schemas/buildingSchema";
+import { BuildingRow } from "../schemas/buildingSchema";
 
-export async function findAll() {
-  return query<BuildingRow>("SELECT * FROM building ORDER BY id");
+export async function findAll(): Promise<BuildingRow[]> {
+  return query("SELECT * FROM building ORDER BY id");
 }
