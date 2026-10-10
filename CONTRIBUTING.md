@@ -1,10 +1,10 @@
 # Contributing
 
-## What we're doing
+## Objective
 
-We're replacing the old backend, [polaris-api](https://github.com/polaris-maps/polaris-api), with this one. A lot of the old one doesn't work, including routing.
+We're replacing the old backend, [polaris-api](https://github.com/polaris-maps/polaris-api), with this one. A lot of the old one doesn't work, including routing (which is the entire point of the app).
 
-The iPhone app already calls five endpoints, and they have to keep working exactly as they are:
+The iPhone app calls five endpoints, and they have to keep working exactly as they are:
 
 | Endpoint | Used for |
 |---|---|
@@ -13,12 +13,6 @@ The iPhone app already calls five endpoints, and they have to keep working exact
 | `GET /app/indoorIssue/all` | The reports list and report pins |
 | `POST /app/indoorIssue/add` | Creating a report |
 | `DELETE /app/indoorIssue/delete/:id` | Deleting a report |
-
-A few rules for those five:
-
-- Success is always **200**. The app treats 201 or 204 as a failure.
-- Keep the field names the old API used, even the odd ones like `defaultlatitude` and `indoorIssue`.
-- There is no login.
 
 After those, we add better reports, saved preferences, and routing on the server. Right now the app does routing on the phone.
 
@@ -35,9 +29,7 @@ Useful references:
 - SQLite through `@libsql/client`
 - zod for checking request input
 - vitest and supertest for tests
-- Deployed on Vercel, handled by the team lead
-
-Don't add other libraries unless a ticket calls for it.
+- deploy via vercel free
 
 ## Getting started
 
@@ -57,7 +49,7 @@ src/
   services/      the logic and rules
   repositories/  the SQL
   schemas/       types and zod schemas
-  middleware/    the 404 and error handlers
+  middleware/    the error handler
   utils/         small helpers
   db/            the connection and table definitions
 scripts/         seed.ts and other one-off scripts
@@ -78,4 +70,4 @@ A request always goes route, then controller, then service, then repository. Loo
 - Put the ticket name in the PR title and link the ticket in the description.
 - Move your ticket to Code Review when the PR is up.
 - Every PR needs one approval. The reviewer merges with **Squash and merge**.
-- Never commit `luminary.db` or `.env`.
+- do not commit `luminary.db`
