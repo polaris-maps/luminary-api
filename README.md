@@ -16,6 +16,7 @@ curl localhost:3000/app/building/all
 | `npm run dev` | Start the server at `http://localhost:3000`. It restarts when you save. |
 | `npm run seed` | Copy the old database's data into `luminary.db` |
 | `npm run build` | Check for type errors |
+| `npm test` | Run the tests |
 
 ## Endpoints so far
 
