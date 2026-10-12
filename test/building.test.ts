@@ -15,7 +15,15 @@ test("GET /app/building/all returns every building", async () => {
 
 test("each building has exactly the keys the iPhone app reads", async () => {
   const res = await request(app).get("/app/building/all");
-  const keys = ["abbreviation", "campus_id", "defaultlatitude", "defaultlongitude", "full_name", "geo_address", "location_id"];
+  const keys = [
+    "abbreviation",
+    "campus_id",
+    "defaultlatitude",
+    "defaultlongitude",
+    "full_name",
+    "geo_address",
+    "location_id",
+  ];
 
   for (const building of res.body) {
     expect(Object.keys(building).sort()).toEqual(keys);
