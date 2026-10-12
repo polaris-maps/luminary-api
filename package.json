@@ -9,6 +9,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
+    "graph": "tsx scripts/buildGraph.ts",
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
