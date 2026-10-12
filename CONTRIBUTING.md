@@ -18,6 +18,8 @@ After those, we add better reports, saved preferences, and routing on the server
 
 `npm run seed` copies the buildings, doors, ramps, and reports from the old database into your local `luminary.db`, this should be helpful for testing.
 
+`data/graph.json` is the map routing runs on: every walking path and road on campus from [OpenStreetMap](https://www.openstreetmap.org), as points and the connections between them. Each connection has its length in meters and whether it's stairs. `npm run graph` downloads a fresh copy. Run it when campus paths change and commit the new file.
+
 Useful references:
 
 - Old API: `https://polaris-api-dept-polaris.apps.cloudapps.unc.edu/app/building/all`
@@ -53,6 +55,7 @@ src/
   utils/         small helpers
   db/            the connection and table definitions
 scripts/         seed.ts and other one-off scripts
+data/            graph.json, the campus walking map for routing
 ```
 
 A request always goes route, then controller, then service, then repository. Look at the buildings endpoint for an example of each layer.
