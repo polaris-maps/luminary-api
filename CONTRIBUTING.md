@@ -42,6 +42,15 @@ npm run dev
 curl localhost:3000/app/building/all
 ```
 
+## Looking at the database
+
+Everyone has their own `luminary.db`. It's not committed, so you can't break anyone else's. `npm run seed` resets it.
+
+When you open the project, VS Code will suggest two extensions. Install both.
+
+- **SQLite Viewer**: click `luminary.db` in the file list to browse the tables.
+- **SQLite**: open the command palette, run `SQLite: New Query`, pick `luminary.db`, write your SQL, then run `SQLite: Run Query`.
+
 ## Project structure
 
 ```text
