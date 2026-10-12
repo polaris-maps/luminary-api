@@ -288,15 +288,6 @@
     "geo_address": "204 Lenoir Drive, Chapel Hill, NC 27514"
   },
   {
-    "location_id": 2774,
-    "full_name": "North Pole",
-    "abbreviation": "NP",
-    "defaultlatitude": 90,
-    "defaultlongitude": 135,
-    "campus_id": 2,
-    "geo_address": null
-  },
-  {
     "location_id": 2775,
     "full_name": "Hanes Art Center",
     "abbreviation": "AR",
@@ -585,24 +576,6 @@
     "geo_address": "310 South Road, Chapel Hill, NC 27514"
   },
   {
-    "location_id": 2807,
-    "full_name": "North Pole",
-    "abbreviation": "NP",
-    "defaultlatitude": 90,
-    "defaultlongitude": 135,
-    "campus_id": 2,
-    "geo_address": null
-  },
-  {
-    "location_id": 2808,
-    "full_name": "South Pole",
-    "abbreviation": "SP",
-    "defaultlatitude": 90,
-    "defaultlongitude": 45,
-    "campus_id": 2,
-    "geo_address": null
-  },
-  {
     "location_id": 2809,
     "full_name": "Bingham",
     "abbreviation": "BI",
@@ -729,15 +702,6 @@
     "geo_address": "101 E. Cameron Avenue, Chapel Hill, NC 27514"
   },
   {
-    "location_id": 2823,
-    "full_name": "South Pole",
-    "abbreviation": "SP",
-    "defaultlatitude": 90,
-    "defaultlongitude": 45,
-    "campus_id": 2,
-    "geo_address": null
-  },
-  {
     "location_id": 2824,
     "full_name": "Venable Hall",
     "abbreviation": "VN",
@@ -799,24 +763,6 @@
     "defaultlongitude": -79.05037689,
     "campus_id": 1,
     "geo_address": "214 E. Cameron Avenue, Chapel Hill, NC 27514"
-  },
-  {
-    "location_id": 2831,
-    "full_name": "North Pole",
-    "abbreviation": "NP",
-    "defaultlatitude": 90,
-    "defaultlongitude": 135,
-    "campus_id": 2,
-    "geo_address": null
-  },
-  {
-    "location_id": 2832,
-    "full_name": "South Pole",
-    "abbreviation": "SP",
-    "defaultlatitude": 90,
-    "defaultlongitude": 45,
-    "campus_id": 2,
-    "geo_address": null
   },
   {
     "location_id": 2833,

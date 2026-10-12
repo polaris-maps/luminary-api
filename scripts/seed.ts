@@ -22,22 +22,18 @@ function toMillis(time: number) {
   return time;
 }
 
-function isInChapelHill(report: any) {
-  return (
-    report.latitude >= 35.85 &&
-    report.latitude <= 35.97 &&
-    report.longitude >= -79.12 &&
-    report.longitude <= -78.98
-  );
+function isInChapelHill(latitude: number, longitude: number) {
+  return latitude >= 35.85 && latitude <= 35.97 && longitude >= -79.12 && longitude <= -78.98;
 }
 
 await initDb();
 
-const buildings = await download("/building/all");
+const allBuildings = await download("/building/all");
+const buildings = allBuildings.filter((b: any) => isInChapelHill(b.defaultlatitude, b.defaultlongitude));
 const doors = await download("/door/all");
 const ramps = await download("/ramp/all");
 const allReports = await download("/indoorIssue/all");
-const reports = allReports.filter(isInChapelHill);
+const reports = allReports.filter((r: any) => isInChapelHill(r.latitude, r.longitude));
 
 await query("DELETE FROM report");
 await query("DELETE FROM ramp");
@@ -92,7 +88,7 @@ for (const report of sampleReports) {
 }
 await writeFile("test/fixtures/reports.json", JSON.stringify(sampleReports, null, 2) + "\n");
 
-console.log(`buildings: ${buildings.length}`);
+console.log(`buildings: ${buildings.length} (skipped ${allBuildings.length - buildings.length} outside Chapel Hill)`);
 console.log(`doors: ${doors.length}`);
 console.log(`ramps: ${ramps.length}`);
 console.log(`reports: ${reports.length} (skipped ${allReports.length - reports.length} outside Chapel Hill)`);

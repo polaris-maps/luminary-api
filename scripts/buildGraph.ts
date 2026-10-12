@@ -7,7 +7,9 @@ const servers = [
   "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
 ];
 
-const campus = "35.896,-79.063,35.920,-79.032";
+const mainCampus = "35.896,-79.063,35.920,-79.032";
+const roadToArtStudio = "35.919,-79.062,35.935,-79.052";
+const areas = [mainCampus, roadToArtStudio];
 
 const walkable = [
   "footway",
@@ -26,7 +28,12 @@ const walkable = [
   "primary_link",
 ];
 
-const overpassQuery = `[out:json][timeout:120];way["highway"~"^(${walkable.join("|")})$"](${campus});(._;>;);out body;`;
+let wayQueries = "";
+for (const area of areas) {
+  wayQueries += `way["highway"~"^(${walkable.join("|")})$"](${area});`;
+}
+
+const overpassQuery = `[out:json][timeout:120];(${wayQueries});(._;>;);out body;`;
 
 function wait(seconds: number) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
