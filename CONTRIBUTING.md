@@ -6,17 +6,17 @@ We're replacing the old backend, [polaris-api](https://github.com/polaris-maps/p
 
 The iPhone app calls five endpoints, and they have to keep working exactly as they are:
 
-| Endpoint | Used for |
-|---|---|
-| `GET /app/building/all` | Building search and map pins |
-| `GET /app/building/:id` | Picking favorite buildings in onboarding |
-| `GET /app/indoorIssue/all` | The reports list and report pins |
-| `POST /app/indoorIssue/add` | Creating a report |
-| `DELETE /app/indoorIssue/delete/:id` | Deleting a report |
+| Endpoint                             | Used for                                 |
+| ------------------------------------ | ---------------------------------------- |
+| `GET /app/building/all`              | Building search and map pins             |
+| `GET /app/building/:id`              | Picking favorite buildings in onboarding |
+| `GET /app/indoorIssue/all`           | The reports list and report pins         |
+| `POST /app/indoorIssue/add`          | Creating a report                        |
+| `DELETE /app/indoorIssue/delete/:id` | Deleting a report                        |
 
 After those, we add better reports, saved preferences, and routing on the server. Right now the app does routing on the phone.
 
-`npm run seed` copies the buildings, doors, ramps, and reports from the old database into your local `luminary.db`, so everyone works with real data.
+`npm run seed` copies the buildings, doors, ramps, and reports from the old database into your local `luminary.db`, this should be helpful for testing.
 
 Useful references:
 
