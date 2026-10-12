@@ -35,8 +35,9 @@ test("some connections are stairs", () => {
   expect(stairs.length).toBeGreaterThan(100);
 });
 
-test("the map covers north and south campus", () => {
+test("the map covers north and south campus and the Art Studio", () => {
   expect(closestPoint(35.90914, -79.05113)).toBeLessThan(50);
   expect(closestPoint(35.91415, -79.05312)).toBeLessThan(50);
   expect(closestPoint(35.89985, -79.04611)).toBeLessThan(50);
+  expect(closestPoint(35.93181, -79.0582)).toBeLessThan(50);
 });
