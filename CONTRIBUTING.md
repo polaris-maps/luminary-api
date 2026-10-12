@@ -57,8 +57,7 @@ When you open the project, VS Code will suggest two extensions. Install both.
 src/
   routes/        which URL goes to which controller
   controllers/   read the request, call a service, send the response
-  services/      the logic and rules
-  repositories/  the SQL
+  services/      the logic, rules, and SQL
   schemas/       types and zod schemas
   middleware/    the error handler
   utils/         small helpers
@@ -67,11 +66,11 @@ scripts/         seed.ts and other one-off scripts
 data/            graph.json, the campus walking map for routing
 ```
 
-A request always goes route, then controller, then service, then repository. Look at the buildings endpoint for an example of each layer.
+A request always goes route, then controller, then service. Look at the buildings endpoint for an example of each layer.
 
 - File names are camelCase and end with their layer, like `buildingService.ts`.
 - Keep it simple. Plain functions, `async`/`await`, no comments.
-- SQL only goes in repositories, always with `?` placeholders.
+- SQL only goes in services, always with `?` placeholders.
 - New tables go at the bottom of `src/db/tables.ts`.
 - Errors always look like `{ "status": 404, "message": "Building not found" }`. Send one with `throw new HttpError(404, "Building not found")`.
 

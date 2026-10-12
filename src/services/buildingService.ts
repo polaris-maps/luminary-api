@@ -1,8 +1,8 @@
-import * as buildingRepository from "../repositories/buildingRepository";
+import { query } from "../db/client";
 import { AppBuilding, BuildingRow } from "../schemas/buildingSchema";
 
 export async function getAllBuildings() {
-  const rows = await buildingRepository.findAll();
+  const rows: BuildingRow[] = await query("SELECT * FROM building ORDER BY id");
   return rows.map(toAppBuilding);
 }
 
