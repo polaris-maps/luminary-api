@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import healthRoutes from "./routes/healthRoutes";
 import buildingRoutes from "./routes/buildingRoutes";
+import reportRoutes from "./routes/reportRoutes";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json({ limit: "4mb" }));
 
 app.use(healthRoutes);
 app.use(buildingRoutes);
+app.use(reportRoutes);
 
 app.use(errorHandler);
 
