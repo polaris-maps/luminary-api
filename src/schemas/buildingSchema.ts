@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type BuildingRow = {
   id: number;
   full_name: string;
@@ -17,3 +19,7 @@ export type AppBuilding = {
   campus_id: number;
   geo_address: string | null;
 };
+
+export const buildingIdSchema = z.object({
+  id: z.coerce.number().int(),
+});
