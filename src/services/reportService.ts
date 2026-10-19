@@ -22,7 +22,7 @@ function isWholeNumberRow(row: ReportRow): boolean {
   );
 }
 
-export function toAppReport(row: ReportRow): AppReport {
+function toAppReport(row: ReportRow): AppReport {
   return {
     issue_id: row.id,
     location: row.location,
