@@ -18,26 +18,7 @@ export function findNearestPoint(points: Point[], lat: number, lng: number) {
   if (!nearest || nearestMeters > maxSnapMeters) return null;
   return { point: nearest, meters: nearestMeters };
 }
-/*
-export type Graph = {
-  points: Point[];
-  connections: Connection[];
-};
 
-export type Point = {
-  id: number;
-  lat: number;
-  lng: number;
-};
-
-export type Connection = {
-  from: number;
-  to: number;
-  meters: number;
-  stairs: boolean;
-};
-
-*/
 export function buildNeighbors(graph: Graph) {
   const neighbors: Record<number, Neighbor[]> = {};
 
