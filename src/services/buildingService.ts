@@ -6,6 +6,12 @@ export async function getAllBuildings() {
   return rows.map(toAppBuilding);
 }
 
+export async function getBuilding(id: number) {
+  const rows: BuildingRow[] = await query("SELECT * FROM building WHERE id = ?", [id]);
+  if (rows.length === 0) return null;
+  return toAppBuilding(rows[0]);
+}
+
 export function toAppBuilding(row: BuildingRow): AppBuilding {
   return {
     location_id: row.id,
