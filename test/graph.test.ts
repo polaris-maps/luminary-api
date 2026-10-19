@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import graph from "../data/graph.json";
+import { getMap, getPoint } from "../src/services/graphService";
 import { distanceMeters } from "../src/utils/distance";
 
 function closestPoint(lat: number, lng: number) {
@@ -40,4 +41,30 @@ test("the map covers north and south campus and the Art Studio", () => {
   expect(closestPoint(35.91415, -79.05312)).toBeLessThan(50);
   expect(closestPoint(35.89985, -79.04611)).toBeLessThan(50);
   expect(closestPoint(35.93181, -79.0582)).toBeLessThan(50);
+});
+
+test("getMap gives back every point and connection", () => {
+  const map = getMap();
+
+  expect(map.points.length).toBe(17613);
+  expect(map.connections.length).toBe(19647);
+});
+
+test("getMap gives back the same copy every time", () => {
+  expect(getMap()).toBe(getMap());
+});
+
+test("getPoint finds a point by its id", () => {
+  expect(getPoint(442146073)).toEqual({ id: 442146073, lat: 35.9092774, lng: -79.0508859 });
+  expect(getPoint(1225004640)).toEqual({ id: 1225004640, lat: 35.899969, lng: -79.0459685 });
+});
+
+test("getPoint gives back the same point that's in the map", () => {
+  const point = getMap().points[100];
+
+  expect(getPoint(point.id)).toBe(point);
+});
+
+test("getPoint gives null for an id that isn't on the map", () => {
+  expect(getPoint(1)).toBeNull();
 });
