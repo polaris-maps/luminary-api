@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import graph from "../data/graph.json";
-import { findNearestPoint } from "../src/services/routingService";
+import { buildNeighbors, findNearestPoint } from "../src/services/routingService";
 import { distanceMeters } from "../src/utils/distance";
 
 /// Find nearest point tests
@@ -78,5 +78,72 @@ test("doesn't change the points it's given", () => {
 
   expect(points).toEqual(before);
   expect(nearest.point).toBe(points[0]);
+});
+/// -------------------------- ///
+
+/// Build neighbors tests
+
+const tinyGraph = {
+  points: [
+    { id: 1, lat: 0, lng: 0 },
+    { id: 2, lat: 0, lng: 0 },
+    { id: 3, lat: 0, lng: 0 },
+    { id: 4, lat: 0, lng: 0 },
+  ],
+  connections: [
+    { from: 1, to: 2, meters: 10, stairs: false },
+    { from: 1, to: 3, meters: 15, stairs: false },
+    { from: 2, to: 3, meters: 15, stairs: false },
+    { from: 3, to: 4, meters: 5, stairs: true },
+  ],
+};
+
+test("lists each point's neighbors on the tiny graph", () => {
+  expect(buildNeighbors(tinyGraph)).toEqual({
+    1: [
+      { to: 2, meters: 10, stairs: false },
+      { to: 3, meters: 15, stairs: false },
+    ],
+    2: [
+      { to: 1, meters: 10, stairs: false },
+      { to: 3, meters: 15, stairs: false },
+    ],
+    3: [
+      { to: 1, meters: 15, stairs: false },
+      { to: 2, meters: 15, stairs: false },
+      { to: 4, meters: 5, stairs: true },
+    ],
+    4: [{ to: 3, meters: 5, stairs: true }],
+  });
+});
+
+test("lists the neighbors of a point near Kenan Labs", () => {
+  expect(buildNeighbors(graph)[442146073]).toEqual([
+    { to: 442146071, meters: 9.8, stairs: false },
+    { to: 1261057809, meters: 14.4, stairs: false },
+  ]);
+});
+
+test("every connection shows up under both of its points", () => {
+  const neighbors = buildNeighbors(graph);
+
+  let total = 0;
+  for (const id in neighbors) total += neighbors[id].length;
+
+  expect(total).toBe(graph.connections.length * 2);
+});
+
+test("a point with no connections has no neighbors", () => {
+  const neighbors = buildNeighbors({ points: [{ id: 1, lat: 0, lng: 0 }], connections: [] });
+
+  expect(neighbors[1]).toEqual([]);
+});
+
+test("doesn't change the graph it's given", () => {
+  const before = structuredClone(tinyGraph);
+
+  buildNeighbors(tinyGraph);
+
+  expect(tinyGraph).toEqual(before);
 });
 /// -------------------------- ///
