@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import graph from "../data/graph.json";
-import { getMap, getPoint } from "../src/services/graphService";
+import { getMap, getPoint } from "../src/utils/graph";
 import { distanceMeters } from "../src/utils/distance";
 
 function closestPoint(lat: number, lng: number) {
