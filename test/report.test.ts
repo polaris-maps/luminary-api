@@ -149,3 +149,151 @@ test("Kenan Laboratories comes back with the right values", async () => {
     qna: '{"obstacle":"Broken Elevator","questions":[]}',
   });
 });
+
+const newReport = {
+  location: "Kenan Laboratories",
+  description: "This elevator is shit",
+  latitude: 35.9091,
+  longitude: -79.0511,
+  datetimeOpen: 1791590400000,
+  category: ["Broken Elevator"],
+  image: "",
+  qna: '{"obstacle":"Broken Elevator","questions":[]}',
+  status: "Open",
+  votes: 0,
+  datetimeClosed: 0,
+  datetimePermanent: 0,
+};
+
+test("POST /app/indoorIssue/add saves the report and returns it with a 200", async () => {
+  const before = Date.now();
+  const res = await request(app).post("/app/indoorIssue/add").send(newReport);
+  const after = Date.now();
+
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual({
+    issue_id: expect.any(Number),
+    location: "Kenan Laboratories",
+    latitude: 35.9091,
+    longitude: -79.0511,
+    description: "This elevator is ****",
+    datetimeopen: expect.any(Number),
+    votes: 0,
+    image: null,
+    category: ["Broken Elevator"],
+    qna: '{"obstacle":"Broken Elevator","questions":[]}',
+  });
+  expect(res.body.datetimeopen).toBeGreaterThanOrEqual(before);
+  expect(res.body.datetimeopen).toBeLessThanOrEqual(after);
+});
+
+test("a saved report shows up in the reports list in the same shape", async () => {
+  const added = await request(app).post("/app/indoorIssue/add").send(newReport);
+  const list = await request(app).get("/app/indoorIssue/all");
+
+  expect(list.body.find((r: any) => r.issue_id === added.body.issue_id)).toEqual(added.body);
+});
+
+test("swear words are censored in location, description, and qna", async () => {
+  const res = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({
+      ...newReport,
+      location: "shit hallway",
+      description: "fucking puddle",
+      qna: '{"obstacle":"shit","questions":[]}',
+    });
+
+  expect(res.body.location).toBe("**** hallway");
+  expect(res.body.description).toBe("******* puddle");
+  expect(res.body.qna).toBe('{"obstacle":"****","questions":[]}');
+});
+
+test("status, votes, datetimeClosed, and datetimePermanent are ignored", async () => {
+  const added = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, status: "Closed", votes: 5, datetimeClosed: 1791590500000, datetimePermanent: 1 });
+  const [row] = await query("SELECT * FROM report WHERE id = ?", [added.body.issue_id]);
+
+  expect(added.body.votes).toBe(0);
+  expect(row.status).toBe("Open");
+  expect(row.votes).toBe(0);
+  expect(row.closed_at).toBeNull();
+  expect(row.is_permanent).toBe(0);
+});
+
+test("datetimeOpen from the app is ignored and the server's time is used", async () => {
+  for (const datetimeOpen of [1791590400000.5, 4102444800000, undefined]) {
+    const before = Date.now();
+    const res = await request(app)
+      .post("/app/indoorIssue/add")
+      .send({ ...newReport, datetimeOpen });
+    const after = Date.now();
+
+    expect(res.body.datetimeopen).toBeGreaterThanOrEqual(before);
+    expect(res.body.datetimeopen).toBeLessThanOrEqual(after);
+  }
+});
+
+test("a report sent with a decimal datetimeOpen doesn't empty the reports list", async () => {
+  await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, datetimeOpen: 1791590400000.5 });
+  const list = await request(app).get("/app/indoorIssue/all");
+
+  expect(list.body.length).toBeGreaterThan(0);
+});
+
+test("an empty image is saved as null, and a real image is saved as is", async () => {
+  const empty = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, image: "" });
+  const photo = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, image: "photo.jpg" });
+
+  expect(empty.body.image).toBeNull();
+  expect(photo.body.image).toBe("photo.jpg");
+});
+
+test("a report with no latitude returns 400", async () => {
+  const res = await request(app).post("/app/indoorIssue/add").send({ longitude: -79.0511 });
+
+  expect(res.status).toBe(400);
+  expect(res.body).toEqual({ status: 400, message: "latitude: Invalid input: expected number, received undefined" });
+});
+
+test("a report with no longitude returns 400", async () => {
+  const res = await request(app).post("/app/indoorIssue/add").send({ latitude: 35.9091 });
+
+  expect(res.status).toBe(400);
+  expect(res.body).toEqual({ status: 400, message: "longitude: Invalid input: expected number, received undefined" });
+});
+
+test("a latitude outside -90 to 90 returns 400", async () => {
+  const tooBig = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, latitude: 999 });
+  const tooSmall = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, latitude: -91 });
+
+  expect(tooBig.status).toBe(400);
+  expect(tooBig.body).toEqual({ status: 400, message: "latitude: Too big: expected number to be <=90" });
+  expect(tooSmall.status).toBe(400);
+  expect(tooSmall.body).toEqual({ status: 400, message: "latitude: Too small: expected number to be >=-90" });
+});
+
+test("a longitude outside -180 to 180 returns 400", async () => {
+  const tooBig = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, longitude: 181 });
+  const tooSmall = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, longitude: -181 });
+
+  expect(tooBig.status).toBe(400);
+  expect(tooBig.body).toEqual({ status: 400, message: "longitude: Too big: expected number to be <=180" });
+  expect(tooSmall.status).toBe(400);
+  expect(tooSmall.body).toEqual({ status: 400, message: "longitude: Too small: expected number to be >=-180" });
+});

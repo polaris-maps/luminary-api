@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type ReportRow = {
   id: number;
   location: string | null;
@@ -29,3 +31,15 @@ export type AppReport = {
   category: string[];
   qna: string | null;
 };
+
+export const newReportSchema = z.object({
+  location: z.string().nullish(),
+  description: z.string().nullish(),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  category: z.array(z.string()).nullish(),
+  image: z.string().nullish(),
+  qna: z.string().nullish(),
+});
+
+export type NewReport = z.infer<typeof newReportSchema>;
