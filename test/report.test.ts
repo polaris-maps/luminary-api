@@ -166,7 +166,9 @@ const newReport = {
 };
 
 test("POST /app/indoorIssue/add saves the report and returns it with a 200", async () => {
+  const before = Date.now();
   const res = await request(app).post("/app/indoorIssue/add").send(newReport);
+  const after = Date.now();
 
   expect(res.status).toBe(200);
   expect(res.body).toEqual({
@@ -175,12 +177,14 @@ test("POST /app/indoorIssue/add saves the report and returns it with a 200", asy
     latitude: 35.9091,
     longitude: -79.0511,
     description: "This elevator is ****",
-    datetimeopen: 1791590400000,
+    datetimeopen: expect.any(Number),
     votes: 0,
     image: null,
     category: ["Broken Elevator"],
     qna: '{"obstacle":"Broken Elevator","questions":[]}',
   });
+  expect(res.body.datetimeopen).toBeGreaterThanOrEqual(before);
+  expect(res.body.datetimeopen).toBeLessThanOrEqual(after);
 });
 
 test("a saved report shows up in the reports list in the same shape", async () => {
@@ -218,14 +222,26 @@ test("status, votes, datetimeClosed, and datetimePermanent are ignored", async (
   expect(row.is_permanent).toBe(0);
 });
 
-test("a report with no datetimeOpen uses the current time", async () => {
-  const { datetimeOpen, ...withoutTime } = newReport;
-  const before = Date.now();
-  const res = await request(app).post("/app/indoorIssue/add").send(withoutTime);
-  const after = Date.now();
+test("datetimeOpen from the app is ignored and the server's time is used", async () => {
+  for (const datetimeOpen of [1791590400000.5, 4102444800000, undefined]) {
+    const before = Date.now();
+    const res = await request(app)
+      .post("/app/indoorIssue/add")
+      .send({ ...newReport, datetimeOpen });
+    const after = Date.now();
 
-  expect(res.body.datetimeopen).toBeGreaterThanOrEqual(before);
-  expect(res.body.datetimeopen).toBeLessThanOrEqual(after);
+    expect(res.body.datetimeopen).toBeGreaterThanOrEqual(before);
+    expect(res.body.datetimeopen).toBeLessThanOrEqual(after);
+  }
+});
+
+test("a report sent with a decimal datetimeOpen doesn't empty the reports list", async () => {
+  await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, datetimeOpen: 1791590400000.5 });
+  const list = await request(app).get("/app/indoorIssue/all");
+
+  expect(list.body.length).toBeGreaterThan(0);
 });
 
 test("an empty image is saved as null, and a real image is saved as is", async () => {
@@ -252,4 +268,32 @@ test("a report with no longitude returns 400", async () => {
 
   expect(res.status).toBe(400);
   expect(res.body).toEqual({ status: 400, message: "longitude: Invalid input: expected number, received undefined" });
+});
+
+test("a latitude outside -90 to 90 returns 400", async () => {
+  const tooBig = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, latitude: 999 });
+  const tooSmall = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, latitude: -91 });
+
+  expect(tooBig.status).toBe(400);
+  expect(tooBig.body).toEqual({ status: 400, message: "latitude: Too big: expected number to be <=90" });
+  expect(tooSmall.status).toBe(400);
+  expect(tooSmall.body).toEqual({ status: 400, message: "latitude: Too small: expected number to be >=-90" });
+});
+
+test("a longitude outside -180 to 180 returns 400", async () => {
+  const tooBig = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, longitude: 181 });
+  const tooSmall = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, longitude: -181 });
+
+  expect(tooBig.status).toBe(400);
+  expect(tooBig.body).toEqual({ status: 400, message: "longitude: Too big: expected number to be <=180" });
+  expect(tooSmall.status).toBe(400);
+  expect(tooSmall.body).toEqual({ status: 400, message: "longitude: Too small: expected number to be >=-180" });
 });

@@ -25,7 +25,7 @@ export async function addReport(report: NewReport) {
       report.latitude,
       report.longitude,
       censor(report.description),
-      report.datetimeOpen ?? Date.now(),
+      Date.now(),
       report.image || null,
       JSON.stringify(report.category ?? []),
       censor(report.qna),

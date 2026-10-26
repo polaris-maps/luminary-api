@@ -35,9 +35,8 @@ export type AppReport = {
 export const newReportSchema = z.object({
   location: z.string().nullish(),
   description: z.string().nullish(),
-  latitude: z.number(),
-  longitude: z.number(),
-  datetimeOpen: z.number().nullish(),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
   category: z.array(z.string()).nullish(),
   image: z.string().nullish(),
   qna: z.string().nullish(),
