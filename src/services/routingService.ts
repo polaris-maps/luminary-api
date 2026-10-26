@@ -1,4 +1,4 @@
-import { Graph, Neighbor, Point } from "../schemas/graphSchema";
+import { BlockedConnection, Graph, Neighbor, Point } from "../schemas/graphSchema";
 import { distanceMeters } from "../utils/distance";
 
 const maxSnapMeters = 150;
@@ -32,4 +32,61 @@ export function buildNeighbors(graph: Graph) {
   }
 
   return neighbors;
+}
+
+function isBlocked(blocked: BlockedConnection[], a: number, b: number) {
+  return blocked.some((c) => (c.from === a && c.to === b) || (c.from === b && c.to === a));
+}
+
+function walkBackwards(cameFrom: Record<number, number>, start: number, end: number) {
+  const path = [end];
+  while (path[0] !== start) {
+    path.unshift(cameFrom[path[0]]);
+  }
+  return path;
+}
+
+export function findShortestRoute(
+  neighbors: Record<number, Neighbor[]>,
+  start: number,
+  end: number,
+  blocked: BlockedConnection[],
+) {
+  if (!neighbors[start] || !neighbors[end]) return null;
+
+  const metersTo: Record<number, number> = { [start]: 0 };
+  const cameFrom: Record<number, number> = {};
+  const finished: Record<number, boolean> = {};
+  let unfinished = [start];
+
+  while (unfinished.length > 0) {
+    let closest = unfinished[0];
+    for (const point of unfinished) {
+      if (metersTo[point] < metersTo[closest]) closest = point;
+    }
+
+    if (closest === end) {
+      return { path: walkBackwards(cameFrom, start, end), meters: metersTo[end] };
+    }
+
+    finished[closest] = true;
+    unfinished = unfinished.filter((point) => point !== closest);
+
+    for (const neighbor of neighbors[closest]) {
+      if (finished[neighbor.to] || isBlocked(blocked, closest, neighbor.to)) continue;
+
+      if (metersTo[neighbor.to] === undefined) {
+        metersTo[neighbor.to] = Infinity;
+        unfinished.push(neighbor.to);
+      }
+
+      const meters = metersTo[closest] + neighbor.meters;
+      if (meters < metersTo[neighbor.to]) {
+        metersTo[neighbor.to] = meters;
+        cameFrom[neighbor.to] = closest;
+      }
+    }
+  }
+
+  return null;
 }

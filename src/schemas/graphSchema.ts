@@ -21,3 +21,8 @@ export type Neighbor = {
   meters: number;
   stairs: boolean;
 };
+
+export type BlockedConnection = {
+  from: number;
+  to: number;
+};

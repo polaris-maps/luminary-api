@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import graph from "../data/graph.json";
-import { buildNeighbors, findNearestPoint } from "../src/services/routingService";
+import { buildNeighbors, findNearestPoint, findShortestRoute } from "../src/services/routingService";
 import { distanceMeters } from "../src/utils/distance";
 
 /// Find nearest point tests
@@ -145,5 +145,101 @@ test("doesn't change the graph it's given", () => {
   buildNeighbors(tinyGraph);
 
   expect(tinyGraph).toEqual(before);
+});
+/// -------------------------- ///
+
+/// Find shortest route tests
+
+const tinyNeighbors = buildNeighbors(tinyGraph);
+
+test("finds the shortest walk on the tiny graph", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 2, [])).toEqual({ path: [1, 2], meters: 10 });
+  expect(findShortestRoute(tinyNeighbors, 1, 4, [])).toEqual({ path: [1, 3, 4], meters: 20 });
+});
+
+test("walks connections in either direction", () => {
+  expect(findShortestRoute(tinyNeighbors, 4, 1, [])).toEqual({ path: [4, 3, 1], meters: 20 });
+});
+
+test("goes around a blocked connection", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 2, [{ from: 1, to: 2 }])).toEqual({ path: [1, 3, 2], meters: 30 });
+});
+
+test("a blocked connection is blocked in both directions", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 2, [{ from: 2, to: 1 }])).toEqual({ path: [1, 3, 2], meters: 30 });
+  expect(findShortestRoute(tinyNeighbors, 2, 1, [{ from: 1, to: 2 }])).toEqual({ path: [2, 3, 1], meters: 30 });
+});
+
+test("gives null when every way there is blocked", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 4, [{ from: 3, to: 4 }])).toBeNull();
+});
+
+test("gives null for a point that isn't on the map", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 99, [])).toBeNull();
+  expect(findShortestRoute(tinyNeighbors, 99, 1, [])).toBeNull();
+});
+
+test("gives null for a point with no way to reach it", () => {
+  const neighbors = buildNeighbors({
+    points: [...tinyGraph.points, { id: 5, lat: 0, lng: 0 }],
+    connections: tinyGraph.connections,
+  });
+
+  expect(findShortestRoute(neighbors, 1, 5, [])).toBeNull();
+});
+
+test("starting at the end is a walk of 0 m", () => {
+  expect(findShortestRoute(tinyNeighbors, 3, 3, [])).toEqual({ path: [3], meters: 0 });
+});
+
+test("doesn't change the neighbors or blocked list it's given", () => {
+  const blocked = [{ from: 1, to: 2 }];
+  const neighborsBefore = structuredClone(tinyNeighbors);
+  const blockedBefore = structuredClone(blocked);
+
+  findShortestRoute(tinyNeighbors, 1, 4, blocked);
+
+  expect(tinyNeighbors).toEqual(neighborsBefore);
+  expect(blocked).toEqual(blockedBefore);
+});
+
+const campusNeighbors = buildNeighbors(graph);
+const kenanLabsPoint = findNearestPoint(graph.points, 35.90914, -79.05113)!.point;
+const battleHallPoint = findNearestPoint(graph.points, 35.91415, -79.05312)!.point;
+
+function usesConnection(path: number[], a: number, b: number) {
+  for (let i = 1; i < path.length; i++) {
+    const from = path[i - 1];
+    const to = path[i];
+    if ((from === a && to === b) || (from === b && to === a)) return true;
+  }
+  return false;
+}
+
+test("finds a walk from Kenan Labs to Battle Hall", () => {
+  const route = findShortestRoute(campusNeighbors, kenanLabsPoint.id, battleHallPoint.id, [])!;
+
+  expect(route.path[0]).toBe(kenanLabsPoint.id);
+  expect(route.path[route.path.length - 1]).toBe(battleHallPoint.id);
+
+  let meters = 0;
+  for (let i = 1; i < route.path.length; i++) {
+    const step = campusNeighbors[route.path[i - 1]].find((neighbor) => neighbor.to === route.path[i]);
+    expect(step).toBeDefined();
+    meters += step!.meters;
+  }
+
+  expect(route.meters).toBeCloseTo(meters);
+});
+
+test("a walk on the real map goes around a blocked connection", () => {
+  const route = findShortestRoute(campusNeighbors, kenanLabsPoint.id, battleHallPoint.id, [])!;
+  const blocked = [{ from: route.path[1], to: route.path[2] }];
+
+  const detour = findShortestRoute(campusNeighbors, kenanLabsPoint.id, battleHallPoint.id, blocked)!;
+
+  expect(usesConnection(route.path, route.path[1], route.path[2])).toBe(true);
+  expect(usesConnection(detour.path, route.path[1], route.path[2])).toBe(false);
+  expect(detour.meters).toBeGreaterThanOrEqual(route.meters);
 });
 /// -------------------------- ///
