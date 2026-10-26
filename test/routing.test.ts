@@ -1,6 +1,12 @@
 import { expect, test } from "vitest";
 import graph from "../data/graph.json";
-import { buildNeighbors, findNearestPoint, findShortestRoute } from "../src/services/routingService";
+import {
+  buildNeighbors,
+  findNearestPoint,
+  findPointsReachableWithoutStairs,
+  findShortestRoute,
+  findStairs,
+} from "../src/services/routingService";
 import { distanceMeters } from "../src/utils/distance";
 
 /// Find nearest point tests
@@ -241,5 +247,155 @@ test("a walk on the real map goes around a blocked connection", () => {
   expect(usesConnection(route.path, route.path[1], route.path[2])).toBe(true);
   expect(usesConnection(detour.path, route.path[1], route.path[2])).toBe(false);
   expect(detour.meters).toBeGreaterThanOrEqual(route.meters);
+});
+/// -------------------------- ///
+
+/// Find stairs tests
+
+const rowGraph = {
+  points: [
+    { id: 1, lat: 0, lng: 0 },
+    { id: 2, lat: 0, lng: 0 },
+    { id: 3, lat: 0, lng: 0 },
+    { id: 4, lat: 0, lng: 0 },
+    { id: 5, lat: 0, lng: 0 },
+  ],
+  connections: [
+    { from: 1, to: 2, meters: 10, stairs: false },
+    { from: 2, to: 3, meters: 10, stairs: false },
+    { from: 3, to: 4, meters: 10, stairs: true },
+    { from: 4, to: 5, meters: 10, stairs: false },
+  ],
+};
+
+const aroundStairsGraph = {
+  points: tinyGraph.points.slice(0, 3),
+  connections: [
+    { from: 1, to: 2, meters: 10, stairs: false },
+    { from: 2, to: 3, meters: 10, stairs: false },
+    { from: 1, to: 3, meters: 5, stairs: true },
+  ],
+};
+
+const noStairsGraph = {
+  points: rowGraph.points,
+  connections: rowGraph.connections.map((c) => ({ ...c, stairs: false })),
+};
+
+test("finds the stairs on a row of points", () => {
+  expect(findStairs(rowGraph)).toEqual([{ from: 3, to: 4 }]);
+});
+
+test("findShortestRoute can't use the stairs it finds", () => {
+  const aroundNeighbors = buildNeighbors(aroundStairsGraph);
+
+  expect(findShortestRoute(aroundNeighbors, 1, 3, [])).toEqual({ path: [1, 3], meters: 5 });
+  expect(findShortestRoute(aroundNeighbors, 1, 3, findStairs(aroundStairsGraph))).toEqual({
+    path: [1, 2, 3],
+    meters: 20,
+  });
+  expect(findShortestRoute(tinyNeighbors, 1, 4, findStairs(tinyGraph))).toBeNull();
+});
+
+const campusStairs = findStairs(graph);
+
+test("lists exactly the stairs connections on the real map", () => {
+  const listed: Record<string, boolean> = {};
+  for (const { from, to } of campusStairs) listed[`${from}-${to}`] = true;
+
+  let wrong = 0;
+  for (const c of graph.connections) {
+    if (!!listed[`${c.from}-${c.to}`] !== c.stairs) wrong++;
+  }
+
+  expect(campusStairs.length).toBe(341);
+  expect(wrong).toBe(0);
+});
+/// -------------------------- ///
+
+/// Find points reachable without stairs tests
+
+test("keeps the bigger group on a row of points", () => {
+  expect(findPointsReachableWithoutStairs(rowGraph)).toEqual(rowGraph.points.slice(0, 3));
+});
+
+test("keeps the biggest of several groups, even when it's last on the map", () => {
+  const map = {
+    points: [...rowGraph.points, { id: 6, lat: 0, lng: 0 }],
+    connections: [
+      { from: 1, to: 2, meters: 10, stairs: true },
+      { from: 2, to: 3, meters: 10, stairs: false },
+      { from: 3, to: 4, meters: 10, stairs: true },
+      { from: 4, to: 5, meters: 10, stairs: false },
+      { from: 5, to: 6, meters: 10, stairs: false },
+    ],
+  };
+
+  expect(findPointsReachableWithoutStairs(map)).toEqual(map.points.slice(3));
+});
+
+test("keeps a point that has a way around its stairs", () => {
+  expect(findPointsReachableWithoutStairs(aroundStairsGraph)).toEqual(aroundStairsGraph.points);
+});
+
+test("a map with no stairs keeps every point", () => {
+  expect(findPointsReachableWithoutStairs(noStairsGraph)).toEqual(rowGraph.points);
+});
+
+test("an empty map gives an empty list", () => {
+  expect(findPointsReachableWithoutStairs({ points: [], connections: [] })).toEqual([]);
+});
+
+test("gives back the same points that are in the map", () => {
+  const reachable = findPointsReachableWithoutStairs(rowGraph);
+
+  for (const point of reachable) {
+    expect(rowGraph.points).toContain(point);
+  }
+});
+
+test("neither function changes the map it's given", () => {
+  const before = structuredClone(rowGraph);
+
+  findStairs(rowGraph);
+  findPointsReachableWithoutStairs(rowGraph);
+
+  expect(rowGraph).toEqual(before);
+});
+
+const reachablePoints = findPointsReachableWithoutStairs(graph);
+
+test("most of the real map is reachable without stairs", () => {
+  expect(reachablePoints.length).toBe(17335);
+});
+
+test("no path without stairs leads off the reachable points", () => {
+  const reachable: Record<number, boolean> = {};
+  for (const point of reachablePoints) reachable[point.id] = true;
+
+  let leaks = 0;
+  for (const c of graph.connections) {
+    if (!c.stairs && reachable[c.from] !== reachable[c.to]) leaks++;
+  }
+
+  expect(leaks).toBe(0);
+});
+
+test("walks across campus without stairs between reachable points", () => {
+  const kenanLabs = findNearestPoint(reachablePoints, 35.90914, -79.05113)!.point;
+  const battleHall = findNearestPoint(reachablePoints, 35.91415, -79.05312)!.point;
+  const artStudio = findNearestPoint(reachablePoints, 35.89985, -79.04611)!.point;
+
+  expect(findShortestRoute(campusNeighbors, kenanLabs.id, battleHall.id, campusStairs)).not.toBeNull();
+  expect(findShortestRoute(campusNeighbors, kenanLabs.id, artStudio.id, campusStairs)).not.toBeNull();
+});
+
+test("someone avoiding stairs at the Naval ROTC Armory still gets a route", () => {
+  const armory = { lat: 35.90925612, lng: -79.05293641 };
+  const closest = findNearestPoint(graph.points, armory.lat, armory.lng)!.point;
+  const closestReachable = findNearestPoint(reachablePoints, armory.lat, armory.lng)!.point;
+
+  expect(findShortestRoute(campusNeighbors, closest.id, kenanLabsPoint.id, campusStairs)).toBeNull();
+  expect(findShortestRoute(campusNeighbors, closestReachable.id, kenanLabsPoint.id, campusStairs)).not.toBeNull();
 });
 /// -------------------------- ///

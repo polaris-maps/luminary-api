@@ -34,6 +34,36 @@ export function buildNeighbors(graph: Graph) {
   return neighbors;
 }
 
+export function findStairs(graph: Graph) {
+  return graph.connections.filter((c) => c.stairs).map(({ from, to }) => ({ from, to }));
+}
+
+export function findPointsReachableWithoutStairs(graph: Graph) {
+  const neighbors = buildNeighbors({ points: graph.points, connections: graph.connections.filter((c) => !c.stairs) });
+  const visited: Record<number, boolean> = {};
+  let biggest: number[] = [];
+
+  for (const point of graph.points) {
+    if (visited[point.id]) continue;
+
+    visited[point.id] = true;
+    const group = [point.id];
+    for (let i = 0; i < group.length; i++) {
+      for (const neighbor of neighbors[group[i]]) {
+        if (visited[neighbor.to]) continue;
+        visited[neighbor.to] = true;
+        group.push(neighbor.to);
+      }
+    }
+
+    if (group.length > biggest.length) biggest = group;
+  }
+
+  const inBiggest: Record<number, boolean> = {};
+  for (const id of biggest) inBiggest[id] = true;
+  return graph.points.filter((point) => inBiggest[point.id]);
+}
+
 function isBlocked(blocked: BlockedConnection[], a: number, b: number) {
   return blocked.some((c) => (c.from === a && c.to === b) || (c.from === b && c.to === a));
 }
