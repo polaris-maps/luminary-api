@@ -34,6 +34,14 @@ export async function addReport(report: NewReport) {
   return toAppReport(rows[0]);
 }
 
+export async function deleteReport(id: number) {
+  const rows = await query("UPDATE report SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL RETURNING id", [
+    Date.now(),
+    id,
+  ]);
+  return rows.length > 0;
+}
+
 function censor(text: string | null | undefined) {
   return text ? filter.clean(text) : (text ?? null);
 }

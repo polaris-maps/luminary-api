@@ -297,3 +297,57 @@ test("a longitude outside -180 to 180 returns 400", async () => {
   expect(tooSmall.status).toBe(400);
   expect(tooSmall.body).toEqual({ status: 400, message: "longitude: Too small: expected number to be >=-180" });
 });
+
+async function createReport() {
+  const res = await request(app).post("/app/indoorIssue/add").send(newReport);
+  return res.body.issue_id;
+}
+
+test("DELETE /app/indoorIssue/delete/:id marks the report as deleted and returns 200", async () => {
+  const id = await createReport();
+
+  const before = Date.now();
+  const res = await request(app).delete(`/app/indoorIssue/delete/${id}`);
+  const after = Date.now();
+  const rows = await query("SELECT * FROM report WHERE id = ?", [id]);
+
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual({ message: "Report deleted" });
+  expect(rows.length).toBe(1);
+  expect(rows[0].deleted_at).toBeGreaterThanOrEqual(before);
+  expect(rows[0].deleted_at).toBeLessThanOrEqual(after);
+});
+
+test("a deleted report no longer shows up in the reports list", async () => {
+  const id = await createReport();
+
+  await request(app).delete(`/app/indoorIssue/delete/${id}`);
+  const res = await request(app).get("/app/indoorIssue/all");
+  const ids = res.body.map((r: any) => r.issue_id);
+
+  expect(ids).not.toContain(id);
+});
+
+test("deleting a report that's already deleted returns 404", async () => {
+  const id = await createReport();
+
+  await request(app).delete(`/app/indoorIssue/delete/${id}`);
+  const res = await request(app).delete(`/app/indoorIssue/delete/${id}`);
+
+  expect(res.status).toBe(404);
+  expect(res.body).toEqual({ status: 404, message: "Report not found" });
+});
+
+test("deleting a report that doesn't exist returns 404", async () => {
+  const res = await request(app).delete("/app/indoorIssue/delete/999999");
+
+  expect(res.status).toBe(404);
+  expect(res.body).toEqual({ status: 404, message: "Report not found" });
+});
+
+test("deleting with an id that isn't a number returns 400", async () => {
+  const res = await request(app).delete("/app/indoorIssue/delete/abc");
+
+  expect(res.status).toBe(400);
+  expect(res.body).toEqual({ status: 400, message: "id: Invalid input: expected number, received NaN" });
+});

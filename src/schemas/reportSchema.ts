@@ -43,3 +43,7 @@ export const newReportSchema = z.object({
 });
 
 export type NewReport = z.infer<typeof newReportSchema>;
+
+export const reportIdSchema = z.object({
+  id: z.coerce.number().int(),
+});
