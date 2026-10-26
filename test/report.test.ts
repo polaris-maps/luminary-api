@@ -149,3 +149,107 @@ test("Kenan Laboratories comes back with the right values", async () => {
     qna: '{"obstacle":"Broken Elevator","questions":[]}',
   });
 });
+
+const newReport = {
+  location: "Kenan Laboratories",
+  description: "This elevator is shit",
+  latitude: 35.9091,
+  longitude: -79.0511,
+  datetimeOpen: 1791590400000,
+  category: ["Broken Elevator"],
+  image: "",
+  qna: '{"obstacle":"Broken Elevator","questions":[]}',
+  status: "Open",
+  votes: 0,
+  datetimeClosed: 0,
+  datetimePermanent: 0,
+};
+
+test("POST /app/indoorIssue/add saves the report and returns it with a 200", async () => {
+  const res = await request(app).post("/app/indoorIssue/add").send(newReport);
+
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual({
+    issue_id: expect.any(Number),
+    location: "Kenan Laboratories",
+    latitude: 35.9091,
+    longitude: -79.0511,
+    description: "This elevator is ****",
+    datetimeopen: 1791590400000,
+    votes: 0,
+    image: null,
+    category: ["Broken Elevator"],
+    qna: '{"obstacle":"Broken Elevator","questions":[]}',
+  });
+});
+
+test("a saved report shows up in the reports list in the same shape", async () => {
+  const added = await request(app).post("/app/indoorIssue/add").send(newReport);
+  const list = await request(app).get("/app/indoorIssue/all");
+
+  expect(list.body.find((r: any) => r.issue_id === added.body.issue_id)).toEqual(added.body);
+});
+
+test("swear words are censored in location, description, and qna", async () => {
+  const res = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({
+      ...newReport,
+      location: "shit hallway",
+      description: "fucking puddle",
+      qna: '{"obstacle":"shit","questions":[]}',
+    });
+
+  expect(res.body.location).toBe("**** hallway");
+  expect(res.body.description).toBe("******* puddle");
+  expect(res.body.qna).toBe('{"obstacle":"****","questions":[]}');
+});
+
+test("status, votes, datetimeClosed, and datetimePermanent are ignored", async () => {
+  const added = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, status: "Closed", votes: 5, datetimeClosed: 1791590500000, datetimePermanent: 1 });
+  const [row] = await query("SELECT * FROM report WHERE id = ?", [added.body.issue_id]);
+
+  expect(added.body.votes).toBe(0);
+  expect(row.status).toBe("Open");
+  expect(row.votes).toBe(0);
+  expect(row.closed_at).toBeNull();
+  expect(row.is_permanent).toBe(0);
+});
+
+test("a report with no datetimeOpen uses the current time", async () => {
+  const { datetimeOpen, ...withoutTime } = newReport;
+  const before = Date.now();
+  const res = await request(app).post("/app/indoorIssue/add").send(withoutTime);
+  const after = Date.now();
+
+  expect(res.body.datetimeopen).toBeGreaterThanOrEqual(before);
+  expect(res.body.datetimeopen).toBeLessThanOrEqual(after);
+});
+
+test("an empty image is saved as null, and a real image is saved as is", async () => {
+  const empty = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, image: "" });
+  const photo = await request(app)
+    .post("/app/indoorIssue/add")
+    .send({ ...newReport, image: "photo.jpg" });
+
+  expect(empty.body.image).toBeNull();
+  expect(photo.body.image).toBe("photo.jpg");
+});
+
+test("a report with no latitude returns 400", async () => {
+  const res = await request(app).post("/app/indoorIssue/add").send({ longitude: -79.0511 });
+
+  expect(res.status).toBe(400);
+  expect(res.body).toEqual({ status: 400, message: "latitude: Invalid input: expected number, received undefined" });
+});
+
+test("a report with no longitude returns 400", async () => {
+  const res = await request(app).post("/app/indoorIssue/add").send({ latitude: 35.9091 });
+
+  expect(res.status).toBe(400);
+  expect(res.body).toEqual({ status: 400, message: "longitude: Invalid input: expected number, received undefined" });
+});

@@ -1,5 +1,8 @@
+import { Filter } from "bad-words";
 import { query } from "../db/client";
-import { AppReport, ReportRow } from "../schemas/reportSchema";
+import { AppReport, NewReport, ReportRow } from "../schemas/reportSchema";
+
+const filter = new Filter();
 
 export async function getOpenReports() {
   const rows: ReportRow[] = await query(
@@ -14,12 +17,29 @@ export async function getOpenReports() {
   return rows.map(toAppReport);
 }
 
-function isWholeNumberRow(row: ReportRow): boolean {
-  return (
-    Number.isInteger(row.id) &&
-    Number.isInteger(row.votes) &&
-    Number.isInteger(row.opened_at)
+export async function addReport(report: NewReport) {
+  const rows: ReportRow[] = await query(
+    "INSERT INTO report (location, latitude, longitude, description, opened_at, image, categories, qna) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING *",
+    [
+      censor(report.location),
+      report.latitude,
+      report.longitude,
+      censor(report.description),
+      report.datetimeOpen ?? Date.now(),
+      report.image || null,
+      JSON.stringify(report.category ?? []),
+      censor(report.qna),
+    ],
   );
+  return toAppReport(rows[0]);
+}
+
+function censor(text: string | null | undefined) {
+  return text ? filter.clean(text) : (text ?? null);
+}
+
+function isWholeNumberRow(row: ReportRow): boolean {
+  return Number.isInteger(row.id) && Number.isInteger(row.votes) && Number.isInteger(row.opened_at);
 }
 
 function toAppReport(row: ReportRow): AppReport {
