@@ -26,3 +26,13 @@ export type BlockedConnection = {
   from: number;
   to: number;
 };
+
+export type AppCoords = {
+  latitude: number;
+  longitude: number;
+};
+
+export type Route = {
+  path: number[];
+  meters: number;
+};
