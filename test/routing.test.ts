@@ -6,8 +6,10 @@ import {
   findPointsReachableWithoutStairs,
   findShortestRoute,
   findStairs,
+  formatRouteForApp,
 } from "../src/services/routingService";
 import { distanceMeters } from "../src/utils/distance";
+import { getPoint } from "../src/utils/graph";
 
 /// Find nearest point tests
 
@@ -397,5 +399,114 @@ test("someone avoiding stairs at the Naval ROTC Armory still gets a route", () =
 
   expect(findShortestRoute(campusNeighbors, closest.id, kenanLabsPoint.id, campusStairs)).toBeNull();
   expect(findShortestRoute(campusNeighbors, closestReachable.id, kenanLabsPoint.id, campusStairs)).not.toBeNull();
+});
+/// -------------------------- ///
+
+/// Format route for app tests
+
+const smallMap = {
+  points: [
+    { id: 1, lat: 35.9, lng: -79.05 },
+    { id: 2, lat: 35.9009, lng: -79.05 },
+    { id: 3, lat: 35.9018, lng: -79.05 },
+  ],
+  connections: [
+    { from: 1, to: 2, meters: 100, stairs: false },
+    { from: 2, to: 3, meters: 100, stairs: false },
+  ],
+};
+
+const southOfPoint1 = { latitude: 35.8999, longitude: -79.05 };
+const northOfPoint3 = { latitude: 35.9019, longitude: -79.05 };
+
+test("turns a route through three points into a path and distance", () => {
+  expect(formatRouteForApp(smallMap, southOfPoint1, northOfPoint3, { path: [1, 2, 3], meters: 200 })).toEqual({
+    path: [
+      { latitude: 35.8999, longitude: -79.05 },
+      { latitude: 35.9, longitude: -79.05 },
+      { latitude: 35.9009, longitude: -79.05 },
+      { latitude: 35.9018, longitude: -79.05 },
+      { latitude: 35.9019, longitude: -79.05 },
+    ],
+    distance: 222.2,
+  });
+});
+
+test("turns a route that's just one point into a path and distance", () => {
+  const start = { latitude: 35.9008, longitude: -79.05 };
+  const end = { latitude: 35.901, longitude: -79.05 };
+
+  expect(formatRouteForApp(smallMap, start, end, { path: [2], meters: 0 })).toEqual({
+    path: [
+      { latitude: 35.9008, longitude: -79.05 },
+      { latitude: 35.9009, longitude: -79.05 },
+      { latitude: 35.901, longitude: -79.05 },
+    ],
+    distance: 22.2,
+  });
+});
+
+test("uses route.meters for the middle instead of measuring it again", () => {
+  const formatted = formatRouteForApp(smallMap, southOfPoint1, northOfPoint3, { path: [1, 2, 3], meters: 500 });
+
+  expect(formatted.distance).toBe(522.2);
+});
+
+test("rounds the distance to one decimal", () => {
+  const formatted = formatRouteForApp(smallMap, southOfPoint1, northOfPoint3, { path: [1, 2, 3], meters: 200.06 });
+
+  expect(formatted.distance).toBe(222.3);
+});
+
+test("follows the route in the order it's given", () => {
+  const formatted = formatRouteForApp(smallMap, northOfPoint3, southOfPoint1, { path: [3, 2, 1], meters: 200 });
+
+  expect(formatted).toEqual({
+    path: [
+      { latitude: 35.9019, longitude: -79.05 },
+      { latitude: 35.9018, longitude: -79.05 },
+      { latitude: 35.9009, longitude: -79.05 },
+      { latitude: 35.9, longitude: -79.05 },
+      { latitude: 35.8999, longitude: -79.05 },
+    ],
+    distance: 222.2,
+  });
+});
+
+test("finds points by id, not by where they are in the map", () => {
+  const shuffled = { points: [smallMap.points[2], smallMap.points[0], smallMap.points[1]], connections: [] };
+  const route = { path: [1, 2, 3], meters: 200 };
+
+  expect(formatRouteForApp(shuffled, southOfPoint1, northOfPoint3, route)).toEqual(
+    formatRouteForApp(smallMap, southOfPoint1, northOfPoint3, route),
+  );
+});
+
+test("doesn't change the map, ends or route it's given", () => {
+  const route = { path: [1, 2, 3], meters: 200 };
+  const before = structuredClone({ smallMap, southOfPoint1, northOfPoint3, route });
+
+  formatRouteForApp(smallMap, southOfPoint1, northOfPoint3, route);
+
+  expect({ smallMap, southOfPoint1, northOfPoint3, route }).toEqual(before);
+});
+
+test("formats a real route from Kenan Labs to the Art Studio", () => {
+  const start = { latitude: 35.90914, longitude: -79.05113 };
+  const end = { latitude: 35.89985, longitude: -79.04611 };
+  const onto = findNearestPoint(graph.points, start.latitude, start.longitude)!;
+  const offOf = findNearestPoint(graph.points, end.latitude, end.longitude)!;
+  const route = findShortestRoute(campusNeighbors, onto.point.id, offOf.point.id, [])!;
+
+  const formatted = formatRouteForApp(graph, start, end, route);
+
+  expect(formatted.path.length).toBe(route.path.length + 2);
+  expect(formatted.path[0]).toEqual(start);
+  expect(formatted.path[formatted.path.length - 1]).toEqual(end);
+  for (let i = 0; i < route.path.length; i++) {
+    const point = getPoint(route.path[i])!;
+    expect(formatted.path[i + 1]).toEqual({ latitude: point.lat, longitude: point.lng });
+  }
+  expect(formatted.distance).toBeCloseTo(onto.meters + route.meters + offOf.meters, 1);
 });
 /// -------------------------- ///

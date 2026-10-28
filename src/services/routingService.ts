@@ -1,4 +1,4 @@
-import { BlockedConnection, Graph, Neighbor, Point } from "../schemas/graphSchema";
+import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema";
 import { distanceMeters } from "../utils/distance";
 
 const maxSnapMeters = 150;
@@ -119,4 +119,23 @@ export function findShortestRoute(
   }
 
   return null;
+}
+
+export function formatRouteForApp(graph: Graph, start: AppCoords, end: AppCoords, route: Route) {
+  const pointsById: Record<number, Point> = {};
+  for (const point of graph.points) pointsById[point.id] = point;
+
+  const points = route.path.map((id) => pointsById[id]);
+  const first = points[0];
+  const last = points[points.length - 1];
+
+  const distance =
+    distanceMeters(start.latitude, start.longitude, first.lat, first.lng) +
+    route.meters +
+    distanceMeters(last.lat, last.lng, end.latitude, end.longitude);
+
+  return {
+    path: [start, ...points.map((point) => ({ latitude: point.lat, longitude: point.lng })), end],
+    distance: Math.round(distance * 10) / 10,
+  };
 }
