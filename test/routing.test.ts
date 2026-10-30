@@ -4,6 +4,7 @@ import {
   buildNeighbors,
   findNearestPoint,
   findPointsReachableWithoutStairs,
+  findReportsToAvoid,
   findShortestRoute,
   findStairs,
   formatRouteForApp,
@@ -508,5 +509,114 @@ test("formats a real route from Kenan Labs to the Art Studio", () => {
     expect(formatted.path[i + 1]).toEqual({ latitude: point.lat, longitude: point.lng });
   }
   expect(formatted.distance).toBeCloseTo(onto.meters + route.meters + offOf.meters, 1);
+});
+/// -------------------------- ///
+
+/// Find reports to avoid tests
+
+const tripStart = { latitude: 35.9, longitude: -79.05 };
+const tripEnd = { latitude: 35.905, longitude: -79.05 };
+const halfway = 35.9025;
+
+function makeReport(issue_id: number, latitude: number, qna: string | null) {
+  return {
+    issue_id,
+    location: null,
+    latitude,
+    longitude: -79.05,
+    description: null,
+    datetimeopen: 1,
+    votes: 0,
+    image: null,
+    category: [],
+    qna,
+  };
+}
+
+function obstacleQna(obstacle: string) {
+  return JSON.stringify({ obstacle, questions: [] });
+}
+
+const tripReports = [
+  makeReport(1, halfway, obstacleQna("Construction")),
+  makeReport(2, halfway, obstacleQna("Missing Sidewalk")),
+  makeReport(3, halfway, obstacleQna("Puddle")),
+  makeReport(4, 35.90505, obstacleQna("Construction")),
+  makeReport(5, halfway, null),
+  makeReport(6, halfway, "not json"),
+];
+
+function idsToAvoid(reports: ReturnType<typeof makeReport>[], avoid: string[]) {
+  return findReportsToAvoid(reports, avoid, tripStart, tripEnd).map((report) => report.issue_id);
+}
+
+test("always avoids Construction and Missing Sidewalk", () => {
+  expect(idsToAvoid(tripReports, [])).toEqual([1, 2]);
+});
+
+test("avoids an obstacle the person asked to avoid", () => {
+  expect(idsToAvoid(tripReports, ["Puddle"])).toEqual([1, 2, 3]);
+});
+
+test("asking to avoid an obstacle with no reports adds nothing", () => {
+  expect(idsToAvoid(tripReports, ["Ice"])).toEqual([1, 2]);
+});
+
+test("no reports gives back an empty list", () => {
+  expect(findReportsToAvoid([], ["Puddle"], tripStart, tripEnd)).toEqual([]);
+});
+
+test("leaves out a report near the start", () => {
+  const nearStart = makeReport(1, 35.89995, obstacleQna("Construction"));
+
+  expect(idsToAvoid([nearStart], [])).toEqual([]);
+});
+
+test("leaves out reports within 15 m of the start but not farther", () => {
+  const inside = makeReport(1, 35.90013, obstacleQna("Construction"));
+  const outside = makeReport(2, 35.90014, obstacleQna("Construction"));
+
+  expect(distanceMeters(inside.latitude, inside.longitude, tripStart.latitude, tripStart.longitude)).toBeLessThan(15);
+  expect(distanceMeters(outside.latitude, outside.longitude, tripStart.latitude, tripStart.longitude)).toBeGreaterThan(
+    15,
+  );
+
+  expect(idsToAvoid([inside, outside], [])).toEqual([2]);
+});
+
+test("leaves out a report near the end even if the person asked to avoid it", () => {
+  const nearEnd = makeReport(1, 35.90505, obstacleQna("Puddle"));
+
+  expect(idsToAvoid([nearEnd], ["Puddle"])).toEqual([]);
+});
+
+test("skips qna that has no obstacle to read", () => {
+  const reports = [makeReport(1, halfway, ""), makeReport(2, halfway, "null"), makeReport(3, halfway, "{}")];
+
+  expect(idsToAvoid(reports, ["Puddle"])).toEqual([]);
+});
+
+test("matches obstacle names exactly", () => {
+  const lowercase = makeReport(1, halfway, obstacleQna("puddle"));
+  const lowercaseConstruction = makeReport(2, halfway, obstacleQna("construction"));
+
+  expect(idsToAvoid([lowercase, lowercaseConstruction], ["Puddle"])).toEqual([]);
+});
+
+test("gives back a report once if it's always avoided and also asked for", () => {
+  const construction = makeReport(1, halfway, obstacleQna("Construction"));
+
+  expect(idsToAvoid([construction], ["Construction"])).toEqual([1]);
+});
+
+test("doesn't change the lists it's given", () => {
+  const reportsBefore = structuredClone(tripReports);
+  const avoid = ["Puddle"];
+
+  const toAvoid = findReportsToAvoid(tripReports, avoid, tripStart, tripEnd);
+
+  expect(tripReports).toEqual(reportsBefore);
+  expect(avoid).toEqual(["Puddle"]);
+  expect(toAvoid[0]).toBe(tripReports[0]);
 });
 /// -------------------------- ///
