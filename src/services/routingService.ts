@@ -1,7 +1,10 @@
 import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema";
+import { AppReport } from "../schemas/reportSchema";
 import { distanceMeters } from "../utils/distance";
 
 const maxSnapMeters = 150;
+const alwaysAvoidedObstacles = ["Construction", "Missing Sidewalk"];
+const maxMetersFromTripEnd = 15;
 
 export function findNearestPoint(points: Point[], lat: number, lng: number) {
   let nearest: Point | null = null;
@@ -138,4 +141,48 @@ export function formatRouteForApp(graph: Graph, start: AppCoords, end: AppCoords
     path: [start, ...points.map((point) => ({ latitude: point.lat, longitude: point.lng })), end],
     distance: Math.round(distance * 10) / 10,
   };
+}
+
+function readObstacle(report: AppReport): string | null {
+  if (!report.qna) {
+    return null;
+  }
+
+  try {
+    const answers = JSON.parse(report.qna);
+    return answers.obstacle;
+  } catch {
+    return null;
+  }
+}
+
+function isNear(report: AppReport, spot: AppCoords) {
+  const meters = distanceMeters(report.latitude, report.longitude, spot.latitude, spot.longitude);
+  return meters <= maxMetersFromTripEnd;
+}
+
+export function findReportsToAvoid(reports: AppReport[], avoid: string[], start: AppCoords, end: AppCoords) {
+  return reports.filter((report) => {
+    // A report right at the start or end would block every way in or out, so it never counts
+    if (isNear(report, start)) {
+      return false;
+    }
+    if (isNear(report, end)) {
+      return false;
+    }
+
+    // Without an obstacle name we can't tell what the report is
+    const obstacle = readObstacle(report);
+    if (!obstacle) {
+      return false;
+    }
+
+    // These block everyone, so they count even if the person didn't ask
+    if (alwaysAvoidedObstacles.includes(obstacle)) {
+      return true;
+    }
+
+    // Everything else only counts if the person asked to avoid it
+    return avoid.includes(obstacle);
+  });
 }
