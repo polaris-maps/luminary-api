@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import graph from "../data/graph.json";
 import {
   buildNeighbors,
+  findConnectionsNearReports,
   findNearestPoint,
   findPointsReachableWithoutStairs,
   findReportsToAvoid,
@@ -9,7 +10,7 @@ import {
   findStairs,
   formatRouteForApp,
 } from "../src/services/routingService";
-import { distanceMeters } from "../src/utils/distance";
+import { distanceMeters, distanceToPath } from "../src/utils/distance";
 import { getPoint } from "../src/utils/graph";
 
 /// Find nearest point tests
@@ -618,5 +619,92 @@ test("doesn't change the lists it's given", () => {
   expect(tripReports).toEqual(reportsBefore);
   expect(avoid).toEqual(["Puddle"]);
   expect(toAvoid[0]).toBe(tripReports[0]);
+});
+/// -------------------------- ///
+
+/// Find connections near reports tests
+
+function near(latitude: number, longitude: number) {
+  return { latitude, longitude };
+}
+
+test("finds a connection when a report is beside its middle, even though both ends are far", () => {
+  expect(findConnectionsNearReports(smallMap, [near(35.90045, -79.04994)])).toEqual([{ from: 1, to: 2 }]);
+});
+
+test("finds both connections when a report is next to the point they share", () => {
+  expect(findConnectionsNearReports(smallMap, [near(35.9009, -79.04995)])).toEqual([
+    { from: 1, to: 2 },
+    { from: 2, to: 3 },
+  ]);
+});
+
+test("finds nothing when a report is far from the path", () => {
+  expect(findConnectionsNearReports(smallMap, [near(35.9004, -79.0494)])).toEqual([]);
+});
+
+test("gives back a connection once even if more than one report is near it", () => {
+  const reports = [near(35.90045, -79.04994), near(35.9003, -79.04995)];
+
+  expect(findConnectionsNearReports(smallMap, reports)).toEqual([{ from: 1, to: 2 }]);
+});
+
+test("no reports gives back an empty list", () => {
+  expect(findConnectionsNearReports(smallMap, [])).toEqual([]);
+});
+
+test("finds connections within 15 m of a report but not farther", () => {
+  const point1 = smallMap.points[0];
+  const point2 = smallMap.points[1];
+  const inside = near(35.90045, -79.04984);
+  const outside = near(35.90045, -79.04983);
+
+  expect(distanceToPath({ lat: inside.latitude, lng: inside.longitude }, point1, point2)).toBeLessThan(15);
+  expect(distanceToPath({ lat: outside.latitude, lng: outside.longitude }, point1, point2)).toBeGreaterThan(15);
+
+  expect(findConnectionsNearReports(smallMap, [inside])).toEqual([{ from: 1, to: 2 }]);
+  expect(findConnectionsNearReports(smallMap, [outside])).toEqual([]);
+});
+
+test("takes the reports from findReportsToAvoid", () => {
+  const report = makeReport(1, 35.90045, obstacleQna("Construction"));
+
+  expect(findConnectionsNearReports(smallMap, [report])).toEqual([{ from: 1, to: 2 }]);
+});
+
+test("findShortestRoute goes around the connections it finds", () => {
+  const detourMap = {
+    points: [...smallMap.points, { id: 4, lat: 35.9009, lng: -79.049 }],
+    connections: [
+      ...smallMap.connections,
+      { from: 1, to: 4, meters: 135, stairs: false },
+      { from: 4, to: 3, meters: 135, stairs: false },
+    ],
+  };
+  const neighbors = buildNeighbors(detourMap);
+  const blocked = findConnectionsNearReports(detourMap, [near(35.90045, -79.04994)]);
+
+  expect(findShortestRoute(neighbors, 1, 3, [])!.path).toEqual([1, 2, 3]);
+  expect(findShortestRoute(neighbors, 1, 3, blocked)!.path).toEqual([1, 4, 3]);
+});
+
+test("on the campus map, a report on a point finds every connection touching it", () => {
+  const point = graph.points[100];
+  const found = findConnectionsNearReports(graph, [near(point.lat, point.lng)]);
+
+  const touching = graph.connections.filter((c) => c.from === point.id || c.to === point.id);
+  expect(touching.length).toBeGreaterThan(0);
+  for (const { from, to } of touching) {
+    expect(found).toContainEqual({ from, to });
+  }
+});
+
+test("doesn't change the map or reports it's given", () => {
+  const reports = [near(35.9009, -79.04995)];
+  const before = structuredClone({ smallMap, reports });
+
+  findConnectionsNearReports(smallMap, reports);
+
+  expect({ smallMap, reports }).toEqual(before);
 });
 /// -------------------------- ///

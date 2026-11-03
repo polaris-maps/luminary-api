@@ -1,10 +1,11 @@
 import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema";
 import { AppReport } from "../schemas/reportSchema";
-import { distanceMeters } from "../utils/distance";
+import { distanceMeters, distanceToPath } from "../utils/distance";
 
 const maxSnapMeters = 150;
 const alwaysAvoidedObstacles = ["Construction", "Missing Sidewalk"];
 const maxMetersFromTripEnd = 15;
+const maxMetersFromReport = 15;
 
 export function findNearestPoint(points: Point[], lat: number, lng: number) {
   let nearest: Point | null = null;
@@ -39,6 +40,20 @@ export function buildNeighbors(graph: Graph) {
 
 export function findStairs(graph: Graph) {
   return graph.connections.filter((c) => c.stairs).map(({ from, to }) => ({ from, to }));
+}
+
+export function findConnectionsNearReports(map: Graph, reports: AppCoords[]) {
+  const pointsById: Record<number, Point> = {};
+  for (const point of map.points) pointsById[point.id] = point;
+
+  return map.connections
+    .filter(({ from, to }) =>
+      reports.some((report) => {
+        const spot = { lat: report.latitude, lng: report.longitude };
+        return distanceToPath(spot, pointsById[from], pointsById[to]) <= maxMetersFromReport;
+      }),
+    )
+    .map(({ from, to }) => ({ from, to }));
 }
 
 export function findPointsReachableWithoutStairs(graph: Graph) {
