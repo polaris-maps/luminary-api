@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import graph from "../data/graph.json";
+import graph from "../data/graph.json" with { type: "json" };
 import {
   buildNeighbors,
   findConnectionsNearReports,
@@ -9,9 +9,9 @@ import {
   findShortestRoute,
   findStairs,
   formatRouteForApp,
-} from "../src/services/routingService";
-import { distanceMeters, distanceToPath } from "../src/utils/distance";
-import { getPoint } from "../src/utils/graph";
+} from "../src/services/routingService.js";
+import { distanceMeters, distanceToPath } from "../src/utils/distance.js";
+import { getPoint } from "../src/utils/graph.js";
 
 /// Find nearest point tests
 

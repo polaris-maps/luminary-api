@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { distanceMeters } from "../src/utils/distance";
+import { distanceMeters } from "../src/utils/distance.js";
 
 const servers = [
   "https://overpass-api.de/api/interpreter",

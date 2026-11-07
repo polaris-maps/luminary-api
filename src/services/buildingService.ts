@@ -1,5 +1,5 @@
-import { query } from "../db/client";
-import { AppBuilding, BuildingRow } from "../schemas/buildingSchema";
+import { query } from "../db/client.js";
+import { AppBuilding, BuildingRow } from "../schemas/buildingSchema.js";
 
 export async function getAllBuildings() {
   const rows: BuildingRow[] = await query("SELECT * FROM building ORDER BY id");

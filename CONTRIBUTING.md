@@ -71,8 +71,17 @@ A request always goes route, then controller, then service. Look at the building
 - File names are camelCase and end with their layer, like `buildingService.ts`.
 - Keep it simple. Plain functions, `async`/`await`, no comments.
 - SQL only goes in services, always with `?` placeholders.
+- Relative imports end in `.js`, even though the file is `.ts`, like `import app from "./app.js"`. The server won't start on Vercel without it, and `npm run build` tells you if you forget one.
 - New tables go at the bottom of `src/db/tables.ts`.
 - Errors always look like `{ "status": 404, "message": "Building not found" }`. Send one with `throw new HttpError(404, "Building not found")`.
+
+## Deploying
+
+The server runs on Vercel at https://luminary-api-ecru.vercel.app, with its data in a hosted Turso database.
+
+- Your local server still uses your own `luminary.db`. You don't need the hosted database to work on anything.
+- To point your local server at the hosted database, set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` (see `.env.example`). Ask Josh for them, and never commit them.
+- **Never run `npm run seed` against the hosted database.** It deletes every report before copying the old data in.
 
 ## Git
 

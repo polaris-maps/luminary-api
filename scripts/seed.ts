@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
-import { query } from "../src/db/client";
-import { initDb } from "../src/db/init";
+import { query } from "../src/db/client.js";
+import { initDb } from "../src/db/init.js";
 
 /*
 I had claude create this script to seed your local SQL-lite with a snapshot of what is in

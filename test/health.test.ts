@@ -1,7 +1,7 @@
 import request from "supertest";
 import { beforeAll, expect, test } from "vitest";
-import app from "../src/app";
-import { loadFixtures } from "./helpers";
+import app from "../src/app.js";
+import { loadFixtures } from "./helpers.js";
 
 beforeAll(loadFixtures);
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as reportService from "../services/reportService";
-import { newReportSchema, reportIdSchema } from "../schemas/reportSchema";
-import { HttpError } from "../utils/httpError";
+import * as reportService from "../services/reportService.js";
+import { newReportSchema, reportIdSchema } from "../schemas/reportSchema.js";
+import { HttpError } from "../utils/httpError.js";
 
 export async function getAllReports(req: Request, res: Response) {
   const reports = await reportService.getOpenReports();

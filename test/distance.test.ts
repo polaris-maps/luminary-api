@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
-import graph from "../data/graph.json";
-import { getPoint } from "../src/utils/graph";
-import { distanceMeters, distanceToPath } from "../src/utils/distance";
+import graph from "../data/graph.json" with { type: "json" };
+import { getPoint } from "../src/utils/graph.js";
+import { distanceMeters, distanceToPath } from "../src/utils/distance.js";
 
 /// Distance to path tests
 

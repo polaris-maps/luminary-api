@@ -1,9 +1,9 @@
 import request from "supertest";
 import { beforeAll, expect, test } from "vitest";
-import app from "../src/app";
-import { query } from "../src/db/client";
-import { loadFixtures } from "./helpers";
-import reports from "./fixtures/reports.json";
+import app from "../src/app.js";
+import { query } from "../src/db/client.js";
+import { loadFixtures } from "./helpers.js";
+import reports from "./fixtures/reports.json" with { type: "json" };
 
 async function addReport(report: { id: number; [column: string]: unknown }) {
   const row = {

@@ -1,6 +1,6 @@
-import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema";
-import { AppReport } from "../schemas/reportSchema";
-import { distanceMeters, distanceToPath } from "../utils/distance";
+import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema.js";
+import { AppReport } from "../schemas/reportSchema.js";
+import { distanceMeters, distanceToPath } from "../utils/distance.js";
 
 const maxSnapMeters = 150;
 const alwaysAvoidedObstacles = ["Construction", "Missing Sidewalk"];

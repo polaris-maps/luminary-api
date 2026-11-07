@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import healthRoutes from "./routes/healthRoutes";
-import buildingRoutes from "./routes/buildingRoutes";
-import reportRoutes from "./routes/reportRoutes";
-import { errorHandler } from "./middleware/errorHandler";
+import healthRoutes from "./routes/healthRoutes.js";
+import buildingRoutes from "./routes/buildingRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
