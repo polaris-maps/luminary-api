@@ -1,7 +1,7 @@
-import { query } from "../src/db/client";
-import { initDb } from "../src/db/init";
-import buildings from "./fixtures/buildings.json";
-import reports from "./fixtures/reports.json";
+import { query } from "../src/db/client.js";
+import { initDb } from "../src/db/init.js";
+import buildings from "./fixtures/buildings.json" with { type: "json" };
+import reports from "./fixtures/reports.json" with { type: "json" };
 
 function toMillis(time: number) {
   if (time < 10000000000) return time * 1000;

@@ -1,5 +1,5 @@
-import graphJson from "../../data/graph.json";
-import { Graph, Point } from "../schemas/graphSchema";
+import graphJson from "../../data/graph.json" with { type: "json" };
+import { Graph, Point } from "../schemas/graphSchema.js";
 
 const graph: Graph = graphJson;
 

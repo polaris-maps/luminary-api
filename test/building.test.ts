@@ -1,8 +1,8 @@
 import request from "supertest";
 import { beforeAll, expect, test } from "vitest";
-import app from "../src/app";
-import { loadFixtures } from "./helpers";
-import buildings from "./fixtures/buildings.json";
+import app from "../src/app.js";
+import { loadFixtures } from "./helpers.js";
+import buildings from "./fixtures/buildings.json" with { type: "json" };
 
 beforeAll(loadFixtures);
 

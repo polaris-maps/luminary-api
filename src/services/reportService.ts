@@ -1,6 +1,6 @@
 import { Filter } from "bad-words";
-import { query } from "../db/client";
-import { AppReport, NewReport, ReportRow } from "../schemas/reportSchema";
+import { query } from "../db/client.js";
+import { AppReport, NewReport, ReportRow } from "../schemas/reportSchema.js";
 
 const filter = new Filter();
 

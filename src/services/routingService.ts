@@ -1,6 +1,8 @@
-import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema";
-import { AppReport } from "../schemas/reportSchema";
-import { distanceMeters, distanceToPath } from "../utils/distance";
+import { AppCoords, BlockedConnection, Graph, Neighbor, Point, Route } from "../schemas/graphSchema.js";
+import { AppReport } from "../schemas/reportSchema.js";
+import { RouteRequest } from "../schemas/routeSchema.js";
+import { distanceMeters, distanceToPath } from "../utils/distance.js";
+import { HttpError } from "../utils/httpError.js";
 
 const maxSnapMeters = 150;
 const alwaysAvoidedObstacles = ["Construction", "Missing Sidewalk"];
@@ -200,4 +202,46 @@ export function findReportsToAvoid(reports: AppReport[], avoid: string[], start:
     // Everything else only counts if the person asked to avoid it
     return avoid.includes(obstacle);
   });
+}
+
+export function prepareMap(map: Graph) {
+  return {
+    map,
+    neighbors: buildNeighbors(map),
+    stairs: findStairs(map),
+    pointsWithoutStairs: findPointsReachableWithoutStairs(map),
+  };
+}
+
+export type PreparedMap = ReturnType<typeof prepareMap>;
+
+function putOnMap(campus: PreparedMap, spot: AppCoords, name: string, avoidStairs: boolean) {
+  const points = avoidStairs ? campus.pointsWithoutStairs : campus.map.points;
+  const nearest = findNearestPoint(points, spot.latitude, spot.longitude);
+  if (nearest) return nearest.point.id;
+
+  // On campus, but the only way out is stairs
+  if (avoidStairs && findNearestPoint(campus.map.points, spot.latitude, spot.longitude)) {
+    throw new HttpError(404, "No route without stairs");
+  }
+  throw new HttpError(400, `${name} is not near a path`);
+}
+
+export function findWalkingRoute(campus: PreparedMap, trip: RouteRequest, reports: AppReport[]) {
+  const start = putOnMap(campus, trip.start, "Start", trip.avoidStairs);
+  const end = putOnMap(campus, trip.end, "End", trip.avoidStairs);
+
+  const stairs = trip.avoidStairs ? campus.stairs : [];
+  const reportsToAvoid = findReportsToAvoid(reports, trip.avoid, trip.start, trip.end);
+  const nearReports = findConnectionsNearReports(campus.map, reportsToAvoid);
+
+  // Stairs are never used when asked, but a route past a report beats no route
+  const route =
+    findShortestRoute(campus.neighbors, start, end, [...stairs, ...nearReports]) ??
+    findShortestRoute(campus.neighbors, start, end, stairs);
+
+  if (!route) {
+    throw new HttpError(404, trip.avoidStairs ? "No route without stairs" : "No route found");
+  }
+  return formatRouteForApp(campus.map, trip.start, trip.end, route);
 }

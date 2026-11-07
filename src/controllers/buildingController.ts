@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import * as buildingService from "../services/buildingService";
-import { buildingIdSchema } from "../schemas/buildingSchema";
-import { HttpError } from "../utils/httpError";
+import * as buildingService from "../services/buildingService.js";
+import { buildingIdSchema } from "../schemas/buildingSchema.js";
+import { HttpError } from "../utils/httpError.js";
 
 export async function getAllBuildings(req: Request, res: Response) {
   const buildings = await buildingService.getAllBuildings();

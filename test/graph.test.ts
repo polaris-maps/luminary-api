@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
-import graph from "../data/graph.json";
-import { getMap, getPoint } from "../src/utils/graph";
-import { distanceMeters } from "../src/utils/distance";
+import graph from "../data/graph.json" with { type: "json" };
+import { getMap, getPoint } from "../src/utils/graph.js";
+import { distanceMeters } from "../src/utils/distance.js";
 
 function closestPoint(lat: number, lng: number) {
   let closest = Infinity;
