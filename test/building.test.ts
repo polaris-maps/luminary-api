@@ -1,6 +1,8 @@
 import request from "supertest";
 import { beforeAll, expect, test } from "vitest";
 import app from "../src/app.js";
+import { findNearestBuilding } from "../src/services/buildingService.js";
+import { distanceMeters } from "../src/utils/distance.js";
 import { loadFixtures } from "./helpers.js";
 import buildings from "./fixtures/buildings.json" with { type: "json" };
 
@@ -97,4 +99,59 @@ test("GET /app/building/:id returns 400 for a non-numeric id", async () => {
   const res = await request(app).get("/app/building/abc");
 
   expect(res.status).toBe(400);
+});
+
+/// Find nearest building tests
+
+// North Hall is about 100 m north of South Hall
+const northHall = { full_name: "North Hall", latitude: 35.9009, longitude: -79.05 };
+const southHall = { full_name: "South Hall", latitude: 35.9, longitude: -79.05 };
+const halls = [northHall, southHall];
+
+test("a spot exactly on a building finds that building", () => {
+  expect(findNearestBuilding(halls, southHall.latitude, southHall.longitude)).toBe(southHall);
+});
+
+test("a spot near a building finds that building", () => {
+  // About 22 m north of South Hall
+  const spot = { latitude: 35.9002, longitude: -79.05 };
+
+  expect(distanceMeters(spot.latitude, spot.longitude, southHall.latitude, southHall.longitude)).toBeLessThan(50);
+  expect(findNearestBuilding(halls, spot.latitude, spot.longitude)).toBe(southHall);
+});
+
+test("picks the closer of two buildings", () => {
+  // About 22 m south of North Hall and 78 m north of South Hall
+  const spot = { latitude: 35.9007, longitude: -79.05 };
+
+  expect(findNearestBuilding(halls, spot.latitude, spot.longitude)).toBe(northHall);
+});
+
+test("a spot more than 50 m from every building gives null", () => {
+  // About 67 m south of South Hall
+  const spot = { latitude: 35.8994, longitude: -79.05 };
+
+  expect(distanceMeters(spot.latitude, spot.longitude, southHall.latitude, southHall.longitude)).toBeGreaterThan(50);
+  expect(findNearestBuilding(halls, spot.latitude, spot.longitude)).toBeNull();
+});
+
+test("a spot between two buildings but more than 50 m from both gives null", () => {
+  // Off to the east, about halfway between the two halls
+  const spot = { latitude: 35.90045, longitude: -79.0495 };
+
+  expect(distanceMeters(spot.latitude, spot.longitude, northHall.latitude, northHall.longitude)).toBeGreaterThan(50);
+  expect(distanceMeters(spot.latitude, spot.longitude, southHall.latitude, southHall.longitude)).toBeGreaterThan(50);
+  expect(findNearestBuilding(halls, spot.latitude, spot.longitude)).toBeNull();
+});
+
+test("an empty list gives null", () => {
+  expect(findNearestBuilding([], southHall.latitude, southHall.longitude)).toBeNull();
+});
+
+test("does not change the list it is given", () => {
+  const before = structuredClone(halls);
+
+  findNearestBuilding(halls, 35.9007, -79.05);
+
+  expect(halls).toEqual(before);
 });
