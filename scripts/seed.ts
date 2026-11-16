@@ -1,6 +1,12 @@
 import { writeFile } from "node:fs/promises";
-import { query } from "../src/db/client.js";
-import { initDb } from "../src/db/init.js";
+
+if (process.env.TURSO_DATABASE_URL?.trim().toLowerCase().startsWith("libsql://")) {
+  console.error("Refusing to seed the hosted database. This would delete every report.");
+  process.exit(1);
+}
+
+const { query } = await import("../src/db/client.js");
+const { initDb } = await import("../src/db/init.js");
 
 /*
 I had claude create this script to seed your local SQL-lite with a snapshot of what is in

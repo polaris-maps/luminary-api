@@ -82,6 +82,7 @@ The server runs on Vercel at https://luminary-api-ecru.vercel.app, with its data
 - Your local server still uses your own `luminary.db`. You don't need the hosted database to work on anything.
 - To point your local server at the hosted database, set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` (see `.env.example`). Ask Josh for them, and never commit them.
 - **Never run `npm run seed` against the hosted database.** It deletes every report before copying the old data in.
+- `npm run seed` refuses to touch the hosted database. If `TURSO_DATABASE_URL` starts with `libsql://`, it stops before deleting anything and exits with an error.
 
 ## Git
 
