@@ -260,14 +260,22 @@ test("a report with no latitude returns 400", async () => {
   const res = await request(app).post("/app/indoorIssue/add").send({ longitude: -79.0511 });
 
   expect(res.status).toBe(400);
-  expect(res.body).toEqual({ status: 400, message: "latitude: Invalid input: expected number, received undefined" });
+  expect(res.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "latitude: Invalid input: expected number, received undefined",
+  });
 });
 
 test("a report with no longitude returns 400", async () => {
   const res = await request(app).post("/app/indoorIssue/add").send({ latitude: 35.9091 });
 
   expect(res.status).toBe(400);
-  expect(res.body).toEqual({ status: 400, message: "longitude: Invalid input: expected number, received undefined" });
+  expect(res.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "longitude: Invalid input: expected number, received undefined",
+  });
 });
 
 test("a latitude outside -90 to 90 returns 400", async () => {
@@ -279,9 +287,17 @@ test("a latitude outside -90 to 90 returns 400", async () => {
     .send({ ...newReport, latitude: -91 });
 
   expect(tooBig.status).toBe(400);
-  expect(tooBig.body).toEqual({ status: 400, message: "latitude: Too big: expected number to be <=90" });
+  expect(tooBig.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "latitude: Too big: expected number to be <=90",
+  });
   expect(tooSmall.status).toBe(400);
-  expect(tooSmall.body).toEqual({ status: 400, message: "latitude: Too small: expected number to be >=-90" });
+  expect(tooSmall.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "latitude: Too small: expected number to be >=-90",
+  });
 });
 
 test("a longitude outside -180 to 180 returns 400", async () => {
@@ -293,9 +309,17 @@ test("a longitude outside -180 to 180 returns 400", async () => {
     .send({ ...newReport, longitude: -181 });
 
   expect(tooBig.status).toBe(400);
-  expect(tooBig.body).toEqual({ status: 400, message: "longitude: Too big: expected number to be <=180" });
+  expect(tooBig.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "longitude: Too big: expected number to be <=180",
+  });
   expect(tooSmall.status).toBe(400);
-  expect(tooSmall.body).toEqual({ status: 400, message: "longitude: Too small: expected number to be >=-180" });
+  expect(tooSmall.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "longitude: Too small: expected number to be >=-180",
+  });
 });
 
 async function createReport() {
@@ -349,5 +373,9 @@ test("deleting with an id that isn't a number returns 400", async () => {
   const res = await request(app).delete("/app/indoorIssue/delete/abc");
 
   expect(res.status).toBe(400);
-  expect(res.body).toEqual({ status: 400, message: "id: Invalid input: expected number, received NaN" });
+  expect(res.body).toEqual({
+    status: 400,
+    code: "INVALID_REQUEST",
+    message: "id: Invalid input: expected number, received NaN",
+  });
 });
