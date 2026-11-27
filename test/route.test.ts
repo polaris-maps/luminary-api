@@ -2,6 +2,7 @@ import request from "supertest";
 import { beforeAll, expect, test } from "vitest";
 import app from "../src/app.js";
 import { findWalkingRoute, prepareMap } from "../src/services/routingService.js";
+import { HttpError } from "../src/utils/httpError.js";
 import { loadFixtures } from "./helpers.js";
 
 beforeAll(loadFixtures);
@@ -42,9 +43,9 @@ function trip(changes: object = {}) {
   return { start, end, avoidStairs: false, avoid: [], ...changes };
 }
 
-function report(spot: { latitude: number; longitude: number }, obstacle: string) {
+function report(spot: { latitude: number; longitude: number }, obstacle: string, issue_id = 1) {
   return {
-    issue_id: 1,
+    issue_id,
     location: null,
     ...spot,
     description: null,
@@ -94,17 +95,97 @@ test("goes around a report on the straight way", () => {
   expect(findWalkingRoute(campus, trip(), reports).path).toEqual(pathThrough([1, 4, 3]));
 });
 
-test("takes the shortest walk anyway when reports block every way without stairs", () => {
-  const reports = [report(onEastWay, "Construction"), report(onWestWay, "Construction")];
+test("a route that meets the filters says so and lists nothing it couldn't avoid", () => {
+  const route = findWalkingRoute(campus, trip({ avoidStairs: true }), []);
 
-  expect(findWalkingRoute(campus, trip({ avoidStairs: true }), reports).path).toEqual(pathThrough([1, 4, 3]));
+  expect(route.meetsFilters).toBe(true);
+  expect(route.couldNotAvoid).toEqual([]);
+  expect(route.nearbyReports).toEqual([]);
 });
 
-test("never uses stairs the person asked to avoid, even to get around a report", () => {
-  const reports = [report(onEastWay, "Construction"), report(onWestWay, "Construction")];
+// Where the stairs between points 2 and 3 get marked: halfway along them
+const straightWayStairs = { type: "stairs", latitude: (35.9009 + 35.9018) / 2, longitude: -79.05 };
+
+test("when Construction blocks every way without stairs, gives the stair route and lists the stairs", () => {
+  const reports = [report(onEastWay, "Construction", 1), report(onWestWay, "Construction", 2)];
   const route = findWalkingRoute(campus, trip({ avoidStairs: true }), reports);
 
-  expect(route.path).not.toContainEqual({ latitude: 35.9009, longitude: -79.05 });
+  expect(route.path).toEqual(pathThrough([1, 2, 3]));
+  expect(route.meetsFilters).toBe(false);
+  expect(route.couldNotAvoid).toEqual([straightWayStairs]);
+});
+
+test("the closest route lists the stairs and the reports it goes through, in order", () => {
+  const reports = [
+    report(onEastWay, "Construction", 1),
+    report(onWestWay, "Construction", 2),
+    report(onStraightWay, "Puddle", 3),
+  ];
+  const route = findWalkingRoute(campus, trip({ avoidStairs: true, avoid: ["Puddle"] }), reports);
+
+  expect(route.path).toEqual(pathThrough([1, 2, 3]));
+  expect(route.couldNotAvoid).toEqual([
+    { type: "report", issueId: 3, obstacle: "Puddle", location: null, ...onStraightWay },
+    straightWayStairs,
+  ]);
+});
+
+test("when every way has a Puddle the person asked to avoid, goes through one on the shortest way", () => {
+  const reports = [report(onEastWay, "Puddle", 1), report(onWestWay, "Puddle", 2), report(onStraightWay, "Puddle", 3)];
+  const route = findWalkingRoute(campus, trip({ avoid: ["Puddle"] }), reports);
+
+  expect(route.path).toEqual(pathThrough([1, 2, 3]));
+  expect(route.meetsFilters).toBe(false);
+  expect(route.couldNotAvoid).toEqual([
+    { type: "report", issueId: 3, obstacle: "Puddle", location: null, ...onStraightWay },
+  ]);
+});
+
+test("the closest route goes past fewer avoided things, even when that walk is longer", () => {
+  // The straight way has two avoided connections (a Puddle, then Ice). The east way has one.
+  const onStraightWayPastPoint2 = { latitude: 35.90135, longitude: -79.05 };
+  const reports = [
+    report(onStraightWay, "Puddle", 1),
+    report(onStraightWayPastPoint2, "Ice", 2),
+    report(onEastWay, "Puddle", 3),
+    report(onWestWay, "Puddle", 4),
+  ];
+  const route = findWalkingRoute(campus, trip({ avoid: ["Puddle", "Ice"] }), reports);
+
+  expect(route.path).toEqual(pathThrough([1, 4, 3]));
+  expect(route.couldNotAvoid).toEqual([
+    { type: "report", issueId: 3, obstacle: "Puddle", location: null, ...onEastWay },
+  ]);
+});
+
+test("the distance of the closest route is the real walk, without the extra cost", () => {
+  const reports = [report(onEastWay, "Construction", 1), report(onWestWay, "Construction", 2)];
+  const route = findWalkingRoute(campus, trip({ avoidStairs: true }), reports);
+
+  expect(route.distance).toBeGreaterThan(200);
+  expect(route.distance).toBeLessThan(225);
+});
+
+function thrownBy(run: () => unknown) {
+  try {
+    run();
+  } catch (error) {
+    return error as HttpError;
+  }
+  throw new Error("Expected it to throw");
+}
+
+test("never goes through Construction, so Construction on every way gives NO_ROUTE", () => {
+  const reports = [
+    report(onEastWay, "Construction", 1),
+    report(onWestWay, "Construction", 2),
+    report(onStraightWay, "Construction", 3),
+  ];
+  const error = thrownBy(() => findWalkingRoute(campus, trip({ avoidStairs: true, avoid: ["Puddle"] }), reports));
+
+  expect(error.status).toBe(404);
+  expect(error.code).toBe("NO_ROUTE");
+  expect(error.message).toBe("No route found");
 });
 
 test("reaches a spot behind stairs when not avoiding stairs", () => {
@@ -112,35 +193,66 @@ test("reaches a spot behind stairs when not avoiding stairs", () => {
   const route = findWalkingRoute(campus, trip({ end: behindStairs }), []);
 
   expect(route.path).toEqual(pathThrough([1, 2, 3, 6], start, behindStairs));
+  expect(route.meetsFilters).toBe(true);
 });
 
-test("a spot you can only reach by stairs gives 404 when avoiding stairs", () => {
+test("a spot you can only reach by stairs gives the route with the fewest stairs when avoiding stairs", () => {
   const behindStairs = { latitude: 35.9035, longitude: -79.05 };
+  const route = findWalkingRoute(campus, trip({ end: behindStairs, avoidStairs: true }), []);
 
-  expect(() => findWalkingRoute(campus, trip({ end: behindStairs, avoidStairs: true }), [])).toThrow(
-    "No route without stairs",
-  );
+  // Going east uses one staircase (3 to 6) instead of two
+  expect(route.path).toEqual(pathThrough([1, 4, 3, 6], start, behindStairs));
+  expect(route.meetsFilters).toBe(false);
+  expect(route.couldNotAvoid).toEqual([{ type: "stairs", latitude: (35.9018 + 35.9035) / 2, longitude: -79.05 }]);
 });
 
-test("a start off the map gives 400", () => {
+test("lists a Construction report near the end, since the route can't go around it", () => {
+  const nearEnd = { latitude: 35.90195, longitude: -79.05 };
+  const route = findWalkingRoute(campus, trip(), [report(nearEnd, "Construction", 7)]);
+
+  expect(route.meetsFilters).toBe(true);
+  expect(route.nearbyReports).toEqual([
+    { issueId: 7, obstacle: "Construction", location: null, ...nearEnd, near: "end" },
+  ]);
+});
+
+test("lists a Puddle near the start only when the person asked to avoid Puddles", () => {
+  const nearStart = { latitude: 35.89985, longitude: -79.05 };
+  const reports = [report(nearStart, "Puddle", 8)];
+
+  expect(findWalkingRoute(campus, trip({ avoid: ["Puddle"] }), reports).nearbyReports).toEqual([
+    { issueId: 8, obstacle: "Puddle", location: null, ...nearStart, near: "start" },
+  ]);
+  expect(findWalkingRoute(campus, trip(), reports).nearbyReports).toEqual([]);
+});
+
+test("a start off the map gives 400 with START_OFF_MAP", () => {
   const raleigh = { latitude: 35.7796, longitude: -78.6382 };
 
-  expect(() => findWalkingRoute(campus, trip({ start: raleigh }), [])).toThrow("Start is not near a path");
-  expect(() => findWalkingRoute(campus, trip({ start: raleigh, avoidStairs: true }), [])).toThrow(
-    "Start is not near a path",
-  );
+  const error = thrownBy(() => findWalkingRoute(campus, trip({ start: raleigh }), []));
+  expect(error.status).toBe(400);
+  expect(error.code).toBe("START_OFF_MAP");
+  expect(error.message).toBe("Start is not near a path");
+
+  const errorAvoidingStairs = thrownBy(() => findWalkingRoute(campus, trip({ start: raleigh, avoidStairs: true }), []));
+  expect(errorAvoidingStairs.code).toBe("START_OFF_MAP");
 });
 
-test("an end off the map gives 400", () => {
+test("an end off the map gives 400 with END_OFF_MAP", () => {
   const raleigh = { latitude: 35.7796, longitude: -78.6382 };
 
-  expect(() => findWalkingRoute(campus, trip({ end: raleigh }), [])).toThrow("End is not near a path");
+  const error = thrownBy(() => findWalkingRoute(campus, trip({ end: raleigh }), []));
+  expect(error.status).toBe(400);
+  expect(error.code).toBe("END_OFF_MAP");
+  expect(error.message).toBe("End is not near a path");
 });
 
-test("a start with no way to the end gives 404", () => {
+test("a start with no way to the end gives 404 with NO_ROUTE", () => {
   const alone = { latitude: 35.91, longitude: -79.05 };
 
-  expect(() => findWalkingRoute(campus, trip({ start: alone }), [])).toThrow("No route found");
+  const error = thrownBy(() => findWalkingRoute(campus, trip({ start: alone }), []));
+  expect(error.status).toBe(404);
+  expect(error.code).toBe("NO_ROUTE");
 });
 
 test("the distance includes getting onto and off the map", () => {
@@ -180,13 +292,23 @@ test("POST /app/route gives 400 for a start off campus", async () => {
     .send({ start: { latitude: 35.7796, longitude: -78.6382 }, end: artStudio });
 
   expect(res.status).toBe(400);
-  expect(res.body).toEqual({ status: 400, message: "Start is not near a path" });
+  expect(res.body).toEqual({ status: 400, code: "START_OFF_MAP", message: "Start is not near a path" });
 });
 
 test("POST /app/route gives 400 with no end", async () => {
   const res = await request(app).post("/app/route").send({ start: kenanLabs });
 
   expect(res.status).toBe(400);
+  expect(res.body.code).toBe("INVALID_REQUEST");
+});
+
+test("POST /app/route says whether the route meets the filters and what it couldn't avoid", async () => {
+  const res = await request(app).post("/app/route").send({ start: kenanLabs, end: artStudio, avoidStairs: true });
+
+  expect(res.status).toBe(200);
+  expect(typeof res.body.meetsFilters).toBe("boolean");
+  expect(Array.isArray(res.body.couldNotAvoid)).toBe(true);
+  expect(Array.isArray(res.body.nearbyReports)).toBe(true);
 });
 
 test("POST /app/route gives 400 when avoidStairs isn't true or false", async () => {

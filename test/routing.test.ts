@@ -2,13 +2,16 @@ import { expect, test } from "vitest";
 import graph from "../data/graph.json" with { type: "json" };
 import {
   buildNeighbors,
+  findConnectionsNearEachReport,
   findConnectionsNearReports,
   findNearestPoint,
   findPointsReachableWithoutStairs,
+  findReportsNearTripEnds,
   findReportsToAvoid,
   findShortestRoute,
   findStairs,
   formatRouteForApp,
+  prepareMap,
 } from "../src/services/routingService.js";
 import { distanceMeters, distanceToPath } from "../src/utils/distance.js";
 import { getPoint } from "../src/utils/graph.js";
@@ -706,5 +709,127 @@ test("doesn't change the map or reports it's given", () => {
   findConnectionsNearReports(smallMap, reports);
 
   expect({ smallMap, reports }).toEqual(before);
+});
+/// -------------------------- ///
+
+/// Find shortest route with costly connections tests
+
+test("goes around a costly connection when the way around costs less", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 2, [], [{ from: 1, to: 2 }], 100)).toEqual({
+    path: [1, 3, 2],
+    meters: 30,
+  });
+});
+
+test("uses a costly connection when it's the only way, and gives the real meters", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 4, [], [{ from: 3, to: 4 }], 1000)).toEqual({
+    path: [1, 3, 4],
+    meters: 20,
+  });
+});
+
+test("a costly connection with no extra cost is like any other", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 2, [], [{ from: 1, to: 2 }], 0)).toEqual({ path: [1, 2], meters: 10 });
+});
+
+test("a costly connection costs extra in both directions", () => {
+  expect(findShortestRoute(tinyNeighbors, 2, 1, [], [{ from: 1, to: 2 }], 100)).toEqual({
+    path: [2, 3, 1],
+    meters: 30,
+  });
+});
+
+test("a blocked connection stays blocked even when the other way is costly", () => {
+  expect(findShortestRoute(tinyNeighbors, 1, 2, [{ from: 1, to: 2 }], [{ from: 1, to: 3 }], 100)).toEqual({
+    path: [1, 3, 2],
+    meters: 30,
+  });
+  expect(findShortestRoute(tinyNeighbors, 1, 4, [{ from: 3, to: 4 }], [{ from: 3, to: 4 }], 100)).toBeNull();
+});
+/// -------------------------- ///
+
+/// Find connections near each report tests
+
+test("keeps which report each connection is near", () => {
+  const report = makeReport(9, 35.9009, obstacleQna("Puddle"));
+
+  expect(findConnectionsNearEachReport(smallMap, [{ ...report, longitude: -79.04995 }])).toEqual([
+    { from: 1, to: 2, report: { ...report, longitude: -79.04995 } },
+    { from: 2, to: 3, report: { ...report, longitude: -79.04995 } },
+  ]);
+});
+
+test("a connection near two reports shows up once for each", () => {
+  const first = { ...makeReport(1, 35.90045, obstacleQna("Puddle")), longitude: -79.04994 };
+  const second = { ...makeReport(2, 35.9003, obstacleQna("Ice")), longitude: -79.04995 };
+
+  expect(findConnectionsNearEachReport(smallMap, [first, second])).toEqual([
+    { from: 1, to: 2, report: first },
+    { from: 1, to: 2, report: second },
+  ]);
+});
+
+test("finds the same connections as findConnectionsNearReports", () => {
+  const reports = [makeReport(1, 35.90045, obstacleQna("Puddle")), makeReport(2, 35.9015, obstacleQna("Ice"))];
+  const withReports = findConnectionsNearEachReport(smallMap, reports).map(({ from, to }) => ({ from, to }));
+
+  expect(withReports).toEqual(findConnectionsNearReports(smallMap, reports));
+});
+/// -------------------------- ///
+
+/// Find reports near trip ends tests
+
+function nearEnds(reports: ReturnType<typeof makeReport>[], avoid: string[]) {
+  return findReportsNearTripEnds(reports, avoid, tripStart, tripEnd);
+}
+
+test("lists a Construction report near the start", () => {
+  const nearStart = makeReport(1, 35.89995, obstacleQna("Construction"));
+
+  expect(nearEnds([nearStart], [])).toEqual([
+    { issueId: 1, obstacle: "Construction", location: null, latitude: 35.89995, longitude: -79.05, near: "start" },
+  ]);
+});
+
+test("lists a report near the end only if the person asked to avoid it", () => {
+  const nearEnd = makeReport(1, 35.90505, obstacleQna("Puddle"));
+
+  expect(nearEnds([nearEnd], [])).toEqual([]);
+  expect(nearEnds([nearEnd], ["Puddle"])).toEqual([
+    { issueId: 1, obstacle: "Puddle", location: null, latitude: 35.90505, longitude: -79.05, near: "end" },
+  ]);
+});
+
+test("leaves out reports in the middle of the trip and reports with no obstacle", () => {
+  const middle = makeReport(1, halfway, obstacleQna("Construction"));
+  const noObstacle = makeReport(2, 35.89995, null);
+
+  expect(nearEnds([middle, noObstacle], [])).toEqual([]);
+});
+
+test("lists exactly the reports findReportsToAvoid leaves out for being at the start or end", () => {
+  const avoid = ["Puddle"];
+  const reports = [...tripReports, makeReport(7, 35.89995, obstacleQna("Puddle"))];
+  const nearIds = nearEnds(reports, avoid).map((report) => report.issueId);
+  const avoidedIds = findReportsToAvoid(reports, avoid, tripStart, tripEnd).map((report) => report.issue_id);
+
+  expect(nearIds).toEqual([4, 7]);
+  for (const id of nearIds) {
+    expect(avoidedIds).not.toContain(id);
+  }
+});
+/// -------------------------- ///
+
+/// Prepare map tests
+
+test("the extra cost for avoided connections is the whole map's length", () => {
+  expect(prepareMap(smallMap).avoidedCost).toBe(200);
+});
+
+test("on the campus map, the extra cost is longer than a walk across campus", () => {
+  const campus = prepareMap(graph);
+  const route = findShortestRoute(campus.neighbors, kenanLabsPoint.id, battleHallPoint.id, [])!;
+
+  expect(campus.avoidedCost).toBeGreaterThan(route.meters);
 });
 /// -------------------------- ///

@@ -13,3 +13,16 @@ export const routeRequestSchema = z.object({
 });
 
 export type RouteRequest = z.infer<typeof routeRequestSchema>;
+
+export type ReportSummary = {
+  issueId: number;
+  obstacle: string;
+  location: string | null;
+  latitude: number;
+  longitude: number;
+};
+
+export type CouldNotAvoid =
+  { type: "stairs"; latitude: number; longitude: number } | ({ type: "report" } & ReportSummary);
+
+export type NearbyReport = ReportSummary & { near: "start" | "end" };
